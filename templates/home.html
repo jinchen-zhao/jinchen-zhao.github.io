@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="intro">
+  <div class="intro-text">
+    <h1>{{ site.name }}</h1>
+    <p class="role">{{ site.title }}</p>
+    <div class="bio">{{ site.bio_html | safe }}</div>
+    <p class="contact">
+      {% set user, domain = site.email.split("@") %}<a id="email" href="/cv.pdf" data-u="{{ user }}" data-d="{{ domain }}" title="{{ user }} [at] {{ domain | replace('.', ' [dot] ') }}">Email</a>
+      <script>(function (a) { a.href = "mailto:" + a.dataset.u + "@" + a.dataset.d; })(document.getElementById("email"));</script>
+      {% for l in site.links %}<span class="sep" aria-hidden="true">·</span><a href="{{ l.url }}">{{ l.label }}</a>{% endfor %}
+    </p>
+  </div>
+  <img class="portrait" src="{{ site.photo }}" alt="Portrait of {{ site.name }}" width="480" height="480">
+</section>
+
+{% if posts %}
+<section id="writing">
+  <h2>Writing</h2>
+  <ul class="rows">
+  {% for p in posts %}
+    <li><span class="when">{{ p.date.strftime("%b %Y") }}</span>
+      <span class="what"><a href="{{ p.url }}">{{ p.title }}</a>{% if p.draft %} <em class="draft">draft</em>{% endif %}</span></li>
+  {% endfor %}
+  </ul>
+  <p class="more"><a href="/blog/">All posts →</a></p>
+</section>
+{% endif %}
+
+<section id="publications">
+  <h2>Publications</h2>
+  <ol class="pubs">
+  {% for p in papers %}
+    <li>
+      <div class="venue"><span>{{ p.venue }}</span><span class="year">{{ p.year }}</span></div>
+      <div class="entry">
+        <p class="title">{{ p.title }}</p>
+        <p class="authors">{{ p.authors_html | safe }}</p>
+        <p class="meta">
+          {% if p.cite %}<span class="cite">{{ p.cite }}</span>{% elif p.status %}<span class="cite">{{ p.status }}</span>{% endif %}
+          {% for l in p.links %}<a class="tag" href="{{ l.url }}">{{ l.label }}</a>{% endfor %}
+        </p>
+      </div>
+    </li>
+  {% endfor %}
+  </ol>
+  <p class="more">* equal contribution</p>
+</section>
+
+<section id="experience">
+  <h2>Experience</h2>
+  <ul class="rows">
+  {% for e in site.experience %}
+    <li><span class="when">{{ e.when }}</span>
+      <span class="what"><strong>{{ e.role }}</strong>, {{ e.org }}{% if e.note_html %}<span class="note">{{ e.note_html | safe }}</span>{% endif %}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+
+<section id="education">
+  <h2>Education</h2>
+  <ul class="rows">
+  {% for e in site.education %}
+    <li><span class="when">{{ e.when }}</span><span class="what"><strong>{{ e.role }}</strong>, {{ e.org }}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+
+<section id="honors">
+  <h2>Honors</h2>
+  <ul class="rows">
+  {% for h in site.honors %}
+    <li><span class="when">{{ h.when }}</span><span class="what">{{ h.what }}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+
+<section id="service">
+  <h2>Service &amp; teaching</h2>
+  <ul class="plain">
+  {% for s in site.service_html %}<li>{{ s | safe }}</li>{% endfor %}
+  </ul>
+</section>
+{% endblock %}

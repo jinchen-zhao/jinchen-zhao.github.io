@@ -1,0 +1,9 @@
+{
+  "name": "jinchen-zhao-website",
+  "private": true,
+  "type": "module",
+  "description": "Build-time math rendering for the blog (see build.py).",
+  "dependencies": {
+    "mathjax-full": "^3.2.1"
+  }
+}

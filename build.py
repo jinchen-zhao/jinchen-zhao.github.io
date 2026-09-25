@@ -1,0 +1,197 @@
+"""Build the site into _site/.
+
+    python build.py            # production build (drafts excluded)
+    python build.py --drafts   # include posts marked `draft: true`
+    python build.py --serve    # build with drafts, then serve on http://localhost:8000
+
+Needs Python (jinja2, pyyaml, markdown-free: Markdown goes through pandoc),
+pandoc >= 3 on PATH or at $PANDOC, and `npm install` for MathJax.
+"""
+
+import argparse
+import datetime as dt
+import html
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import jinja2
+import yaml
+
+ROOT = Path(__file__).resolve().parent
+CONTENT = ROOT / "content"
+BLOG = CONTENT / "blog"
+OUT = ROOT / "_site"
+
+
+def pandoc_bin():
+    if os.environ.get("PANDOC"):
+        return os.environ["PANDOC"]
+    found = shutil.which("pandoc")
+    if found:
+        return found
+    local = Path(os.environ.get("LOCALAPPDATA", "")) / "Pandoc" / "pandoc.exe"
+    if local.exists():
+        return str(local)
+    sys.exit("pandoc not found: install it or set $PANDOC")
+
+
+def pandoc(args, text):
+    r = subprocess.run([pandoc_bin(), *args], input=text, capture_output=True,
+                       text=True, encoding="utf-8", cwd=BLOG)
+    if r.returncode:
+        sys.exit(f"pandoc failed:\n{r.stderr}")
+    if r.stderr.strip():
+        print(r.stderr.strip(), file=sys.stderr)
+    return r.stdout
+
+
+def md_inline(text):
+    """Short Markdown (bio paragraphs, list items) to HTML."""
+    out = pandoc(["-f", "markdown", "-t", "html", "--wrap=none"], text).strip()
+    # One-paragraph snippets are used inline; strip the wrapping <p>.
+    if out.startswith("<p>") and out.endswith("</p>") and out.count("<p>") == 1:
+        out = out[3:-4]
+    return out
+
+
+def read_post(path):
+    raw = path.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n", raw, re.S)
+    if not m:
+        sys.exit(f"{path.name}: missing front matter")
+    meta = yaml.safe_load(m.group(1))
+    date = meta["date"]
+    if isinstance(date, str):
+        date = dt.date.fromisoformat(date)
+    slug = meta.get("slug") or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", path.stem)
+    args = ["-f", "markdown+tex_math_dollars+raw_tex", "-t", "html5",
+            "--math-method=mathjax", "--wrap=none", "--section-divs",
+            "--citeproc", "--bibliography", str(BLOG / "refs.bib"), "--csl", str(BLOG / "aps.csl"),
+            "--metadata", "link-citations=true",
+            "--metadata", "reference-section-title=",
+            "--syntax-highlighting=pygments"]
+    if meta.get("toc"):
+        args += ["--toc", "--toc-depth=2", "--template", str(ROOT / "templates" / "pandoc-body.html")]
+    body = pandoc(args, raw)
+    toc = ""
+    if meta.get("toc"):
+        toc, _, body = body.partition("<!--BODY-->")
+    return {
+        "title": meta["title"], "date": date, "slug": slug,
+        "summary": meta.get("summary", ""), "draft": bool(meta.get("draft")),
+        "toc": toc.strip(), "body": body, "url": f"/blog/{slug}/",
+        "src": path.name,
+    }
+
+
+def bold_me(authors, me):
+    a = html.escape(authors)
+    return a.replace(html.escape(me), f"<strong>{html.escape(me)}</strong>")
+
+
+def atom_feed(site, posts):
+    now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    items = []
+    for p in posts[:20]:
+        ts = f"{p['date'].isoformat()}T00:00:00Z"
+        items.append(
+            f"<entry><title>{html.escape(p['title'])}</title>"
+            f"<link href=\"{site['url']}{p['url']}\"/><id>{site['url']}{p['url']}</id>"
+            f"<updated>{ts}</updated><summary>{html.escape(p['summary'])}</summary></entry>")
+    return ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            "<feed xmlns=\"http://www.w3.org/2005/Atom\">"
+            f"<title>{html.escape(site['name'])}</title>"
+            f"<link href=\"{site['url']}/blog/\"/><link rel=\"self\" href=\"{site['url']}/feed.xml\"/>"
+            f"<id>{site['url']}/</id><updated>{now}</updated>"
+            f"<author><name>{html.escape(site['name'])}</name></author>"
+            + "".join(items) + "</feed>\n")
+
+
+def build(drafts):
+    site = yaml.safe_load((CONTENT / "site.yaml").read_text(encoding="utf-8"))
+    pubs = yaml.safe_load((CONTENT / "publications.yaml").read_text(encoding="utf-8"))
+
+    site["bio_html"] = pandoc(["-f", "markdown", "-t", "html", "--wrap=none"], site["bio"])
+    for key in ("experience", "education"):
+        for e in site.get(key, []):
+            e["note_html"] = md_inline(e["note"]) if e.get("note") else ""
+    site["service_html"] = [md_inline(s) for s in site.get("service", [])]
+    for p in pubs["papers"]:
+        p["authors_html"] = bold_me(p["authors"], pubs["me"])
+
+    posts = [read_post(f) for f in sorted(BLOG.glob("*.md"))]
+    posts = [p for p in posts if drafts or not p["draft"]]
+    posts.sort(key=lambda p: p["date"], reverse=True)
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"),
+                             autoescape=jinja2.select_autoescape(["html"]))
+    env.filters["longdate"] = lambda d: f"{d.day} {d.strftime('%B %Y')}"
+    ctx = {"site": site, "year": dt.date.today().year,
+           "updated": dt.date.today().strftime("%B %Y")}
+
+    # Empty _site/ rather than delete it: on Windows a running preview server
+    # (or OneDrive) holds the directories open and rmtree fails.
+    if OUT.exists():
+        for f in OUT.rglob("*"):
+            if f.is_file():
+                f.unlink()
+        for d in sorted((d for d in OUT.rglob("*") if d.is_dir()), key=lambda d: len(d.parts), reverse=True):
+            try:
+                d.rmdir()
+            except OSError:
+                pass
+    shutil.copytree(ROOT / "static", OUT, dirs_exist_ok=True)
+    (OUT / ".nojekyll").write_text("")
+
+    def write(rel, text):
+        dest = OUT / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(text, encoding="utf-8")
+        return dest
+
+    write("index.html", env.get_template("home.html").render(
+        **ctx, papers=pubs["papers"], posts=posts[:3], page="home"))
+    write("blog/index.html", env.get_template("blog.html").render(
+        **ctx, posts=posts, page="blog"))
+    math_pages = []
+    for p in posts:
+        dest = write(f"blog/{p['slug']}/index.html",
+                     env.get_template("post.html").render(**ctx, post=p, page="post"))
+        if 'class="math' in p["body"]:
+            math_pages.append(str(dest))
+        # Images and data next to a post live in content/blog/<slug>/.
+        assets = BLOG / p["slug"]
+        if assets.is_dir():
+            shutil.copytree(assets, OUT / "blog" / p["slug"], dirs_exist_ok=True)
+    write("404.html", env.get_template("404.html").render(**ctx, page="404"))
+    write("feed.xml", atom_feed(site, [p for p in posts if not p["draft"]]))
+
+    if math_pages:
+        r = subprocess.run(["node", str(ROOT / "mathjax.mjs"), *math_pages])
+        if r.returncode:
+            sys.exit("MathJax rendering failed")
+
+    print(f"built {OUT} ({len(posts)} post(s), {len(math_pages)} with math)")
+
+
+def serve():
+    import functools
+    import http.server
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(OUT))
+    print("serving http://localhost:8000  (Ctrl+C to stop)")
+    http.server.ThreadingHTTPServer(("127.0.0.1", 8000), handler).serve_forever()
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--drafts", action="store_true")
+    ap.add_argument("--serve", action="store_true")
+    a = ap.parse_args()
+    build(a.drafts or a.serve)
+    if a.serve:
+        serve()

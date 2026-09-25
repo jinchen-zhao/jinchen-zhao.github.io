@@ -1,0 +1,48 @@
+# Newest first. `me` is bolded automatically wherever it appears in `authors`.
+# `venue` is the short label shown in the margin; `links` render as [label] links.
+# Keep in step with career/cv/academic/main.tex.
+
+me: Jinchen Zhao
+
+papers:
+  - title: How Good Are Frontier Models at Physics? Expert Re-Grading Reveals Broken Evaluations and Near-Saturation of Leading Benchmarks
+    authors: Ali Ansari, Haoran Sun, et al. (51 authors, including Logan Wright and Jinchen Zhao)
+    venue: arXiv
+    year: 2026
+    status: preprint
+    links:
+      - {label: arXiv, url: "https://arxiv.org/abs/2609.13009"}
+
+  - title: Nature of granular drag in microgravity
+    authors: Tivadar Pongó*, Tianhui Liao*, Jinchen Zhao, Valentin Dichtl, Simeon Völkel, Raúl Cruz Hidalgo, Kai Huang
+    venue: arXiv
+    year: 2026
+    status: preprint
+    links:
+      - {label: arXiv, url: "https://arxiv.org/abs/2603.03006"}
+
+  - title: Anomalous criticality with bounded fluctuations and long-range frustration induced by broken time-reversal symmetry
+    authors: Jinchen Zhao, Myung-Joong Hwang
+    venue: PRR
+    year: 2023
+    cite: Phys. Rev. Research 5, L042016 (2023)
+    links:
+      - {label: journal, url: "https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.L042016"}
+      - {label: arXiv, url: "https://arxiv.org/abs/2208.02268"}
+
+  - title: Frustrated Superradiant Phase Transition
+    authors: Jinchen Zhao, Myung-Joong Hwang
+    venue: PRL
+    year: 2022
+    cite: Phys. Rev. Lett. 128, 163601 (2022)
+    links:
+      - {label: journal, url: "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.128.163601"}
+      - {label: arXiv, url: "https://arxiv.org/abs/2112.01470"}
+
+  - title: Embedded Inertial Sensor for Tracking Projectile Impact on Granular Media
+    authors: Stefan Köstler, Jinchen Zhao, Chen Lyu, Simeon Völkel, Kai Huang
+    venue: EPJ WoC
+    year: 2021
+    cite: EPJ Web Conf. 249, 15007 (2021)
+    links:
+      - {label: journal, url: "https://doi.org/10.1051/epjconf/202124915007"}

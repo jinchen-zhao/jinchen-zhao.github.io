@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Minimal numeric citation style in the manner of the APS journals:
+     [1], [2, 3] in text; "A. B. Author and C. Author, Title, Journal 1, 2 (2020)." -->
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" default-locale="en-US">
+  <info>
+    <title>APS-like numeric (website)</title>
+    <id>jinchen-zhao-website-aps</id>
+    <updated>2026-09-25T00:00:00+00:00</updated>
+  </info>
+  <macro name="author">
+    <names variable="author">
+      <name initialize-with=". " delimiter=", " and="text" delimiter-precedes-last="never" et-al-min="11" et-al-use-first="1"/>
+      <et-al font-style="italic"/>
+    </names>
+  </macro>
+  <macro name="locator">
+    <choose>
+      <if type="article-journal">
+        <group delimiter=", ">
+          <group delimiter=" ">
+            <text variable="container-title" form="short"/>
+            <text variable="volume" font-weight="bold"/>
+          </group>
+          <text variable="page" form="short"/>
+        </group>
+      </if>
+      <else>
+        <group delimiter=", ">
+          <text variable="container-title"/>
+          <text variable="publisher"/>
+          <text variable="number"/>
+        </group>
+      </else>
+    </choose>
+  </macro>
+  <citation collapse="citation-number">
+    <sort><key variable="citation-number"/></sort>
+    <layout prefix="[" suffix="]" delimiter=", ">
+      <text variable="citation-number"/>
+    </layout>
+  </citation>
+  <bibliography entry-spacing="0" second-field-align="flush">
+    <layout suffix=".">
+      <text variable="citation-number" prefix="[" suffix="]"/>
+      <group delimiter=", ">
+        <text macro="author"/>
+        <text variable="title" font-style="italic"/>
+        <group delimiter=" ">
+          <text macro="locator"/>
+          <date variable="issued" prefix="(" suffix=")"><date-part name="year"/></date>
+        </group>
+      </group>
+    </layout>
+  </bibliography>
+</style>

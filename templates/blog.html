@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Blog · {{ site.name }}{% endblock %}
+{% block main %}
+<h1 class="page-title">Blog</h1>
+{% if posts %}
+<ul class="post-list">
+{% for p in posts %}
+  <li>
+    <time datetime="{{ p.date.isoformat() }}">{{ p.date | longdate }}</time>
+    <a href="{{ p.url }}">{{ p.title }}</a>{% if p.draft %} <em class="draft">draft</em>{% endif %}
+    {% if p.summary %}<p>{{ p.summary }}</p>{% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="empty">Nothing here yet.</p>
+{% endif %}
+<p class="more"><a href="/feed.xml">Atom feed</a></p>
+{% endblock %}

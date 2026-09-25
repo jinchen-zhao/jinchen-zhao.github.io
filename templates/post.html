@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} · {{ site.name }}{% endblock %}
+{% block description %}{{ post.summary or post.title }}{% endblock %}
+{% block main %}
+<article class="post">
+  <header>
+    <h1>{{ post.title }}</h1>
+    <p class="byline"><time datetime="{{ post.date.isoformat() }}">{{ post.date | longdate }}</time>{% if post.draft %} · <em class="draft">draft</em>{% endif %}</p>
+  </header>
+  {% if post.toc %}{{ post.toc | safe }}{% endif %}
+  <div class="prose">
+{{ post.body | safe }}
+  </div>
+</article>
+<p class="more"><a href="/blog/">← All posts</a></p>
+{% endblock %}

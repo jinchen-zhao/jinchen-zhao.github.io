@@ -1,0 +1,51 @@
+# Everything on the homepage except publications (see publications.yaml).
+# Markdown is allowed in `bio` and in any `note`.
+
+name: Jinchen Zhao
+title: PhD student in Applied Physics, Yale University
+url: https://jinchen-zhao.github.io
+email: jinchen.zhao@yale.edu
+photo: /profile.jpg
+cv: /cv.pdf
+
+links:
+  - {label: Google Scholar, url: "https://scholar.google.com/citations?hl=en&user=Ib53fIQAAAAJ"}
+  - {label: ORCID, url: "https://orcid.org/0000-0003-2124-1113"}
+  - {label: GitHub, url: "https://github.com/Jinchen-Zhao"}
+  - {label: LinkedIn, url: "https://www.linkedin.com/in/jinchenzhao/"}
+
+bio: |
+  I am a PhD student in Applied Physics at Yale University, advised by
+  [Logan Wright](https://www.lgwrightlab.com/). I study unconventional computing
+  platforms (optical, quantum and thermodynamic), with a focus on the role of
+  analog noise in computation at ultra-low energy scales and on pathways toward
+  practical, scalable applications.
+
+  Before Yale, I was a dual-degree undergraduate at Duke Kunshan University and
+  Duke University, where I worked with
+  [Myung-Joong Hwang](https://sites.duke.edu/hwang/) on frustration and
+  criticality in superradiant phase transitions.
+
+experience:
+  - {when: "2023 – now", role: Graduate Research Assistant, org: Yale University, note: "Advisor: Logan Wright"}
+  - {when: "Summer 2026", role: Research Intern, org: "NTT Research, Physics & Informatics Lab"}
+  - {when: "2022", role: University–Corporation Lab, org: World Economic Forum}
+  - {when: "Spring 2022", role: Undergraduate Researcher, org: "Duke University", note: "Advisor: Kenneth Brown"}
+  - {when: "2021 – 2023", role: Undergraduate Researcher, org: Duke Kunshan University, note: "Advisor: Myung-Joong Hwang"}
+  - {when: "2019 – 2021", role: Undergraduate Researcher, org: Duke Kunshan University, note: "Advisor: Kai Huang"}
+
+education:
+  - {when: "2023 – now", role: PhD in Applied Physics, org: Yale University}
+  - {when: "2019 – 2023", role: "BS in Applied Mathematics & Computational Science", org: "Duke Kunshan University & Duke University"}
+
+honors:
+  - {when: "2026", what: SPIE Optics and Photonics Scholarship}
+  - {when: "2025", what: "Roberts Innovation Fund, Yale Engineering"}
+  - {when: "2023", what: "Sterling Prize Fellowship, Yale University"}
+  - {when: "2023", what: "Zu Chongzhi Math Student First Award, Duke Kunshan University"}
+  - {when: "2023", what: "Magna cum laude and Graduation with Distinction, Duke Kunshan University"}
+
+service:
+  - "Reviewer for *Nature Photonics*, *Nature Communications*, *Light: Science & Applications* and *Journal of the Optical Society of America B*"
+  - "Teaching Fellow, APHY 5750 *Physics of AI* and PHYS 180 *University Physics*, Yale"
+  - "Mentor to five undergraduate research projects, Yale"
