@@ -3,7 +3,6 @@
 <section class="intro">
   <div class="intro-text">
     <h1>{{ site.name }}</h1>
-    <p class="role">{{ site.title }}</p>
     <div class="bio">{{ site.bio_html | safe }}</div>
     <p class="contact">
       {%- set user, domain = site.email.split("@") -%}
@@ -35,9 +34,10 @@
   <ol class="pubs">
   {% for p in papers %}
     <li>
-      <div class="thumb">{% if p.thumb_url %}<img src="{{ p.thumb_url }}" alt="{{ p.thumb_alt }}" width="140" height="140" loading="lazy">{% endif %}</div>
+      {% set primary = p.links[0].url if p.links else none %}
+      <a class="thumb" {% if primary %}href="{{ primary }}" {% endif %}tabindex="-1" aria-hidden="true">{% if p.thumb_url %}<img src="{{ p.thumb_url }}" alt="{{ p.thumb_alt }}" width="140" height="140" loading="lazy">{% endif %}</a>
       <div class="entry">
-        <p class="title">{{ p.title }}</p>
+        <p class="title">{% if primary %}<a href="{{ primary }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</p>
         <p class="authors">{{ p.authors_html | safe }}</p>
         <p class="meta">
           {% if p.cite %}<span class="cite">{{ p.cite }}</span>{% else %}<span class="cite">{{ p.venue }} {{ p.status }} ({{ p.year }})</span>{% endif %}
@@ -56,15 +56,6 @@
   {% for e in site.experience %}
     <li><span class="when">{{ e.when }}</span>
       <span class="what"><strong>{{ e.role }}</strong>, {{ e.org }}{% if e.note_html %}<span class="note">{{ e.note_html | safe }}</span>{% endif %}</span></li>
-  {% endfor %}
-  </ul>
-</section>
-
-<section id="education">
-  <h2>Education</h2>
-  <ul class="rows">
-  {% for e in site.education %}
-    <li><span class="when">{{ e.when }}</span><span class="what"><strong>{{ e.role }}</strong>, {{ e.org }}</span></li>
   {% endfor %}
   </ul>
 </section>

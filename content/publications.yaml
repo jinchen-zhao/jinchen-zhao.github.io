@@ -1,6 +1,7 @@
 # Newest first. `me` is bolded automatically wherever it appears in `authors`.
 # `thumb` is the slug of static/pubs/<slug>.svg (drawn from figures/<slug>/);
-# `links` render as [label] links.
+# The first link is the primary one: the title and the thumbnail point to it.
+# `links` render as chips labelled by destination (PRL, arXiv, ...).
 # Keep in step with career/cv/academic/main.tex.
 
 me: Jinchen Zhao
@@ -8,7 +9,7 @@ me: Jinchen Zhao
 papers:
   - title: How Good Are Frontier Models at Physics? Expert Re-Grading Reveals Broken Evaluations and Near-Saturation of Leading Benchmarks
     thumb: frontier-models
-    authors: Ali Ansari, Haoran Sun, et al. (51 authors, including Logan Wright and Jinchen Zhao)
+    authors: Ali Ansari, Haoran Sun, …, Jinchen Zhao, … (51 authors)
     venue: arXiv
     year: 2026
     status: preprint
@@ -31,7 +32,7 @@ papers:
     year: 2023
     cite: Phys. Rev. Research 5, L042016 (2023)
     links:
-      - {label: journal, url: "https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.L042016"}
+      - {label: "PRR", url: "https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.L042016"}
       - {label: arXiv, url: "https://arxiv.org/abs/2208.02268"}
 
   - title: Frustrated Superradiant Phase Transition
@@ -41,7 +42,7 @@ papers:
     year: 2022
     cite: Phys. Rev. Lett. 128, 163601 (2022)
     links:
-      - {label: journal, url: "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.128.163601"}
+      - {label: "PRL", url: "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.128.163601"}
       - {label: arXiv, url: "https://arxiv.org/abs/2112.01470"}
 
   - title: Embedded Inertial Sensor for Tracking Projectile Impact on Granular Media
@@ -51,4 +52,4 @@ papers:
     year: 2021
     cite: EPJ Web Conf. 249, 15007 (2021)
     links:
-      - {label: journal, url: "https://doi.org/10.1051/epjconf/202124915007"}
+      - {label: "EPJ WoC", url: "https://doi.org/10.1051/epjconf/202124915007"}

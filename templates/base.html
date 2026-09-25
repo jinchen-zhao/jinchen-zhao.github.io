@@ -7,6 +7,13 @@
 <meta name="description" content="{% block description %}{{ site.name }}, {{ site.title }}.{% endblock %}">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:title" content="{{ self.title() }}">
+<meta property="og:description" content="{{ self.description() }}">
+<meta property="og:url" content="{{ site.url }}{% block path %}/{% endblock %}">
+<meta property="og:image" content="{{ site.url }}{{ site.photo }}">
+<meta name="twitter:card" content="summary">
 <link rel="alternate" type="application/atom+xml" title="{{ site.name }}" href="/feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

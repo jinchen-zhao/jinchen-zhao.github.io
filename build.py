@@ -133,6 +133,22 @@ def darkmode_svg(path):
     path.write_text(svg, encoding="utf-8")
 
 
+def external_links_new_tab(html_text, site_url):
+    """Open links to other sites (and PDFs such as the CV) in a new tab;
+    links within the site keep the browser default (same tab)."""
+    def fix(m):
+        tag = m.group(0)
+        href = re.search(r'href="([^"]*)"', tag)
+        if not href or "target=" in tag or 'id="email"' in tag:
+            return tag
+        url = href.group(1)
+        external = url.startswith(("http://", "https://")) and not url.startswith(site_url)
+        if external or url.lower().endswith(".pdf"):
+            return tag[:-1] + ' target="_blank" rel="noopener">'
+        return tag
+    return re.sub(r"<a\b[^>]*>", fix, html_text)
+
+
 def atom_feed(site, posts):
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     items = []
@@ -201,6 +217,8 @@ def build(drafts):
     def write(rel, text):
         dest = OUT / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
+        if rel.endswith(".html"):
+            text = external_links_new_tab(text, site["url"])
         dest.write_text(text, encoding="utf-8")
         return dest
 

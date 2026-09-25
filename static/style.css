@@ -71,11 +71,11 @@ a:hover { text-decoration: underline; text-underline-offset: .18em; text-decorat
 /* ---------- intro ---------- */
 
 .intro {
-  display: grid; grid-template-columns: 1fr 11rem; gap: 2.5rem; align-items: start;
+  display: grid; grid-template-columns: 1fr 11rem; gap: 3rem; align-items: center;
   padding: 2rem 0 1rem;
 }
 .intro h1 {
-  margin: 0; font-weight: 600; font-size: 2.35rem; line-height: 1.1; letter-spacing: -.015em;
+  margin: 0 0 1rem; font-weight: 600; font-size: 2.35rem; line-height: 1.1; letter-spacing: -.015em;
 }
 .intro .role { margin: .45rem 0 1.25rem; font: 400 .95rem/1.4 var(--sans); color: var(--muted); }
 .intro .bio p { margin: 0 0 .85rem; }
@@ -84,7 +84,7 @@ a:hover { text-decoration: underline; text-underline-offset: .18em; text-decorat
 .contact a { white-space: nowrap; }
 .portrait {
   display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover;
-  border-radius: 6px; margin-top: .35rem;
+  border-radius: 50%;
 }
 
 @media (max-width: 38rem) {
@@ -149,8 +149,13 @@ h2 {
 .tag {
   padding: .05rem .45rem; border-radius: 3px;
   background: var(--accent-soft); font-weight: 500;
+  transition: background-color .12s, color .12s;
 }
-.tag:hover { text-decoration: none; filter: brightness(.96); }
+.tag:hover { text-decoration: none; background: var(--accent); color: var(--bg); }
+.pubs .title a { color: var(--text); }
+.pubs .title a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+.pubs .thumb { display: block; transition: filter .12s; }
+.pubs a.thumb:hover { filter: brightness(.97); }
 
 @media (max-width: 38rem) {
   .pubs li { grid-template-columns: 1fr; gap: .2rem; }
