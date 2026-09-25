@@ -16,23 +16,17 @@ links:
 
 bio: |
   I am a PhD student in Applied Physics at Yale University, advised by
-  [Logan Wright](https://www.lgwrightlab.com/). I study unconventional computing
-  platforms (optical, quantum and thermodynamic), with a focus on the role of
-  analog noise in computation at ultra-low energy scales and on pathways toward
-  practical, scalable applications.
-
-  Before Yale, I was a dual-degree undergraduate at Duke Kunshan University and
-  Duke University, where I worked with
-  [Myung-Joong Hwang](https://sites.duke.edu/hwang/) on frustration and
-  criticality in superradiant phase transitions.
+  [Logan Wright](https://www.lgwrightlab.com/). I work on unconventional computing
+  platforms (optical, quantum and thermodynamic) in both theory and experiment.
+  I am also interested in machine learning and using large language models to
+  automate scientific research.
 
 experience:
   - {when: "2023 – now", role: Graduate Research Assistant, org: Yale University, note: "Advisor: Logan Wright"}
   - {when: "Summer 2026", role: Research Intern, org: "NTT Research, Physics & Informatics Lab"}
   - {when: "2022", role: University–Corporation Lab, org: World Economic Forum}
   - {when: "Spring 2022", role: Undergraduate Researcher, org: "Duke University", note: "Advisor: Kenneth Brown"}
-  - {when: "2021 – 2023", role: Undergraduate Researcher, org: Duke Kunshan University, note: "Advisor: Myung-Joong Hwang"}
-  - {when: "2019 – 2021", role: Undergraduate Researcher, org: Duke Kunshan University, note: "Advisor: Kai Huang"}
+  - {when: "2019 – 2023", role: Undergraduate Researcher, org: Duke Kunshan University, note: "Advisors: Myung-Joong Hwang, Kai Huang"}
 
 education:
   - {when: "2023 – now", role: PhD in Applied Physics, org: Yale University}

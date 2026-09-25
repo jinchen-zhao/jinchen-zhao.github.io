@@ -15,15 +15,16 @@
 {% block head %}{% endblock %}
 {% if site.goatcounter %}<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
 </head>
-<body class="page-{{ page }}">
+{% set show_head = page != "home" or posts %}
+<body class="page-{{ page }}{% if not show_head %} no-head{% endif %}">
+{% if show_head %}
 <header class="masthead">
   <a class="wordmark" href="/">{{ site.name }}</a>
   <nav>
-    {% if page == "home" %}<a href="#publications">Publications</a>{% else %}<a href="/#publications">Publications</a>{% endif %}
     {% if posts or page in ("post", "blog") %}<a href="/blog/"{% if page in ("post", "blog") %} aria-current="page"{% endif %}>Blog</a>{% endif %}
-    <a href="{{ site.cv }}">CV</a>
   </nav>
 </header>
+{% endif %}
 <main>
 {% block main %}{% endblock %}
 </main>

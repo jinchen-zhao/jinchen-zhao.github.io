@@ -5,16 +5,16 @@
     <h1>{{ site.name }}</h1>
     <p class="role">{{ site.title }}</p>
     <div class="bio">{{ site.bio_html | safe }}</div>
-  </div>
-  <aside class="side">
-    <img class="portrait" src="{{ site.photo }}" alt="Portrait of {{ site.name }}" width="480" height="480">
-    <ul class="contact">
-      {% set user, domain = site.email.split("@") %}<li><a id="email" href="/cv.pdf" data-u="{{ user }}" data-d="{{ domain }}" title="{{ user }} [at] {{ domain | replace('.', ' [dot] ') }}">Email</a></li>
-      <li><a href="{{ site.cv }}">CV</a></li>
-      {% for l in site.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}
-    </ul>
+    <p class="contact">
+      {%- set user, domain = site.email.split("@") -%}
+      <a id="email" href="/cv.pdf" data-u="{{ user }}" data-d="{{ domain }}" title="{{ user }} [at] {{ domain | replace('.', ' [dot] ') }}">Email</a>
+      {%- for l in [{"label": "CV", "url": site.cv}] + site.links -%}
+      <span class="sep" aria-hidden="true">·</span><a href="{{ l.url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </p>
     <script>(function (a) { a.href = "mailto:" + a.dataset.u + "@" + a.dataset.d; })(document.getElementById("email"));</script>
-  </aside>
+  </div>
+  <img class="portrait" src="{{ site.photo }}" alt="Portrait of {{ site.name }}" width="480" height="480">
 </section>
 
 {% if posts %}

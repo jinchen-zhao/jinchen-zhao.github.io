@@ -56,6 +56,7 @@ a:hover { text-decoration: underline; text-underline-offset: .18em; text-decorat
 }
 .masthead .wordmark { color: var(--text); letter-spacing: -.01em; }
 .page-home .masthead .wordmark { visibility: hidden; }
+.no-head main { padding-top: 2.5rem; }
 .masthead nav { display: flex; gap: 1.25rem; }
 .masthead nav a { color: var(--muted); }
 .masthead nav a:hover, .masthead nav a[aria-current] { color: var(--text); text-decoration: none; }
@@ -70,7 +71,7 @@ a:hover { text-decoration: underline; text-underline-offset: .18em; text-decorat
 /* ---------- intro ---------- */
 
 .intro {
-  display: grid; grid-template-columns: 1fr 9.5rem; gap: 2.25rem; align-items: start;
+  display: grid; grid-template-columns: 1fr 11rem; gap: 2.5rem; align-items: start;
   padding: 2rem 0 1rem;
 }
 .intro h1 {
@@ -78,23 +79,17 @@ a:hover { text-decoration: underline; text-underline-offset: .18em; text-decorat
 }
 .intro .role { margin: .45rem 0 1.25rem; font: 400 .95rem/1.4 var(--sans); color: var(--muted); }
 .intro .bio p { margin: 0 0 .85rem; }
-.side { padding-top: .35rem; }
-.contact {
-  list-style: none; margin: 1.1rem 0 0; padding: .9rem 0 0;
-  border-top: 1px solid var(--rule);
-  font: .875rem/1.95 var(--sans);
-}
+.contact { margin: 1.1rem 0 0; font: .875rem/1.8 var(--sans); }
+.contact .sep { color: var(--faint); margin: 0 .5rem; }
 .contact a { white-space: nowrap; }
 .portrait {
   display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover;
-  border-radius: 6px;
+  border-radius: 6px; margin-top: .35rem;
 }
 
 @media (max-width: 38rem) {
   .intro { grid-template-columns: 1fr; gap: 1.25rem; padding-top: .5rem; }
-  .side { order: -1; display: flex; align-items: center; gap: 1.25rem; padding-top: 0; }
-  .portrait { width: 6.5rem; flex: none; border-radius: 50%; }
-  .contact { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 0 .9rem; line-height: 1.8; }
+  .portrait { width: 7.5rem; order: -1; border-radius: 50%; }
   .intro h1 { font-size: 2rem; }
 }
 
