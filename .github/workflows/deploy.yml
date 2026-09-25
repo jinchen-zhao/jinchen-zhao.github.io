@@ -34,6 +34,8 @@ jobs:
           wget -q https://github.com/jgm/pandoc/releases/download/3.11/pandoc-3.11-1-amd64.deb
           sudo dpkg -i pandoc-3.11-1-amd64.deb
       - run: python build.py
+        env:
+          GOATCOUNTER: ${{ vars.GOATCOUNTER }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

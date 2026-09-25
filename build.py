@@ -135,7 +135,7 @@ def bold_me(authors, me):
     return a.replace(html.escape(me), f"<strong>{html.escape(me)}</strong>")
 
 
-# Dark-mode palette for the publication thumbnails (figures/BRIEF.md palette).
+# Dark-mode palette for the publication thumbnails (their shared drawing palette).
 # Injected into each SVG as CSS, so the image follows the reader's OS theme
 # even when shown through <img>. Role hues are only lifted a little.
 THUMB_DARK = {
@@ -152,7 +152,7 @@ THUMB_DARK = {
 
 
 # Light mode deepens the two role hues so they reach 3:1 contrast on the paper
-# tone (orange was 2.6:1, blue 3.1:1). Sources keep the brief's hexes.
+# tone (orange was 2.6:1, blue 3.1:1). Sources keep the original hexes.
 THUMB_LIGHT = {
     "#3A8FD0": "#2F80C4",
     "#D9822B": "#C8701C",
@@ -214,6 +214,9 @@ def atom_feed(site, posts):
 
 def build(drafts):
     site = yaml.safe_load((CONTENT / "site.yaml").read_text(encoding="utf-8"))
+    # Visit counter: set in the CI environment (a repository variable), not in
+    # the repository, so local previews and forks count nothing.
+    site["goatcounter"] = os.environ.get("GOATCOUNTER", "")
     pubs = yaml.safe_load((CONTENT / "publications.yaml").read_text(encoding="utf-8"))
 
     site["bio_html"] = pandoc(["-f", "markdown", "-t", "html", "--wrap=none"], site["bio"])
@@ -223,15 +226,12 @@ def build(drafts):
     site["service_html"] = [md_inline(s) for s in site.get("service", [])]
     for p in pubs["papers"]:
         p["authors_html"] = bold_me(p["authors"], pubs["me"])
-        # Thumbnail art: static/pubs/<slug>.svg, alt text from the first line of
-        # figures/<slug>/docs/caption.md. A missing SVG leaves an empty tile.
+        # Thumbnail art: static/pubs/<slug>.svg with alt text from the YAML.
+        # A missing SVG leaves an empty tile.
         slug = p.get("thumb")
         if slug and (ROOT / "static" / "pubs" / f"{slug}.svg").exists():
             p["thumb_url"] = f"/pubs/{slug}.svg"
-            cap = ROOT / "figures" / slug / "docs" / "caption.md"
-            lines = [l.strip() for l in cap.read_text(encoding="utf-8").splitlines()
-                     if l.strip() and not l.startswith("#")] if cap.exists() else []
-            p["thumb_alt"] = re.sub(r"^\**alt( text)?\**:?\**\s*", "", lines[0], flags=re.I) if lines else p["title"]
+            p["thumb_alt"] = p.get("thumb_alt") or p["title"]
 
     posts = [read_post(f, site) for f in sorted(BLOG.glob("*.md"))]
     for p in posts:

@@ -1,5 +1,5 @@
 # Newest first. `me` is bolded automatically wherever it appears in `authors`.
-# `thumb` is the slug of static/pubs/<slug>.svg (drawn from figures/<slug>/);
+# `thumb` is the slug of static/pubs/<slug>.svg; `thumb_alt` is its alt text.
 # The first link is the primary one: the title and the thumbnail point to it.
 # `links` render as chips labelled by destination (PRL, arXiv, ...).
 # Keep in step with career/cv/academic/main.tex.
@@ -9,6 +9,7 @@ me: Jinchen Zhao
 papers:
   - title: How Good Are Frontier Models at Physics? Expert Re-Grading Reveals Broken Evaluations and Near-Saturation of Leading Benchmarks
     thumb: frontier-models
+    thumb_alt: "A graded answer sheet with blue ticks and dark crosses, and a magnifying glass over two rows showing, enlarged, a crossed-out mark replaced by a blue tick and another replaced by an orange question mark beside an orange-highlighted question."
     authors: Ali Ansari, Haoran Sun, …, Jinchen Zhao, … (51 authors)
     venue: arXiv
     year: 2026
@@ -18,6 +19,7 @@ papers:
 
   - title: Nature of granular drag in microgravity
     thumb: granular-drag
+    thumb_alt: "An orange ball sunk into a bed of small grey grains, with an open cone-shaped hole above it back to the surface, a thin layer of blue grains packed ahead of the ball and lining the hole, and the symbol μg in the empty space above."
     authors: Tivadar Pongó*, Tianhui Liao*, Jinchen Zhao, Valentin Dichtl, Simeon Völkel, Raúl Cruz Hidalgo, Kai Huang
     venue: arXiv
     year: 2026
@@ -27,6 +29,7 @@ papers:
 
   - title: Anomalous criticality with bounded fluctuations and long-range frustration induced by broken time-reversal symmetry
     thumb: anomalous-criticality
+    thumb_alt: "A ring of five optical cavities, each drawn as two grey mirrors around a soft blue glow with a blue arrow pointing up or down; the arrows alternate around the ring except for the two bottom cavities, which both point up, sit on a pink tint and are joined by a red link, while in the centre of the ring a soft blue glow with a circular blue arrow surrounds the symbol θ."
     authors: Jinchen Zhao, Myung-Joong Hwang
     venue: PRR
     year: 2023
@@ -37,6 +40,7 @@ papers:
 
   - title: Frustrated Superradiant Phase Transition
     thumb: frustrated-spt
+    thumb_alt: "Three optical cavities sit at the corners of a triangle, joined by wavy links; a large blue arrow points down in the top cavity and smaller blue arrows point up in the two bottom cavities, whose connecting link is red."
     authors: Jinchen Zhao, Myung-Joong Hwang
     venue: PRL
     year: 2022
@@ -47,6 +51,7 @@ papers:
 
   - title: Embedded Inertial Sensor for Tracking Projectile Impact on Granular Media
     thumb: imu-granular
+    thumb_alt: "A white ball with a small orange chip on a circuit board is shown in two fading snapshots flying down at a slight slant toward a bed of grey beads; below the surface the ball is hidden by the beads, drawn only as a dashed outline, while its orange chip, labelled IMU, glows through the grains at the end of a solid blue track."
     authors: Stefan Köstler, Jinchen Zhao, Chen Lyu, Simeon Völkel, Kai Huang
     venue: EPJ WoC
     year: 2021

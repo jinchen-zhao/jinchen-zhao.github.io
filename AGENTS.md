@@ -9,14 +9,13 @@ This repository is public. Private notes about the site (what to keep off it and
 | Path | What |
 |---|---|
 | `content/site.yaml` | Bio, links, experience, honors, service, blog license |
-| `content/publications.yaml` | Publication list (newest first); keep in step with the academic CV |
+| `content/publications.yaml` | Publication list (newest first), thumbnail slug and alt text; keep in step with the academic CV |
 | `content/blog/*.md` | Posts: `YYYY-MM-DD-slug.md` with YAML front matter |
 | `content/blog/<slug>/` | Images and files for that post, copied next to it |
 | `content/blog/refs.bib`, `aps.csl` | Shared bibliography; numeric APS-like citation style |
 | `templates/` | Jinja page templates; `pandoc-body.html` splits the TOC from the body |
 | `filters/figures.lua` | Pandoc filter: numbered figures and `@fig:` references |
 | `static/` | Copied verbatim: `style.css`, `profile.jpg`, `cv.pdf`, `favicon.svg`, `pubs/<slug>.svg` |
-| `figures/` | Publication thumbnails: `BRIEF.md` (shared style and palette) and one folder per paper, drawn with the schematic-figure skill; `figure/out/thumb.svg` is copied to `static/pubs/<slug>.svg`, alt text is the first line of `docs/caption.md`. The skill's tooling and the paper sources in each folder are gitignored. |
 | `build.py` | Pandoc (Markdown, citeproc) + Jinja, then `mathjax.mjs` renders TeX to static HTML |
 
 ## Writing a post
@@ -43,10 +42,10 @@ Every post ends with a "Cite as" line, BibTeX with a copy button and the license
     python build.py --serve          # drafts included, http://localhost:8000
     python build.py                  # what CI runs
 
-Needs Python with `jinja2` and `pyyaml`, Node, and pandoc 3.x (`--math-method`, `--syntax-highlighting`); CI pins pandoc 3.11. If pandoc is not on PATH, set `$PANDOC`.
+The visit counter is configured by the `GOATCOUNTER` repository variable, not in the repository. Needs Python with `jinja2` and `pyyaml`, Node, and pandoc 3.x (`--math-method`, `--syntax-highlighting`); CI pins pandoc 3.11. If pandoc is not on PATH, set `$PANDOC`.
 
 ## Conventions
 
 - No plain email address in the page source: the Email link is assembled in the browser from `site.yaml`.
 - Links to other sites and PDFs open in a new tab (`external_links_new_tab` in `build.py`); the stylesheet link carries a content hash so style changes reach returning visitors at once.
-- Thumbnails draw only with the `figures/BRIEF.md` palette hexes: `build.py` recolours exactly those per theme (`THUMB_LIGHT` deepens blue and orange to 3:1 on the paper tone; `THUMB_DARK` maps every colour), and any other hex looks wrong in one theme.
+- Thumbnails (`static/pubs/`, drawn separately) use only the shared palette hexes listed in `THUMB_DARK`: `build.py` recolours exactly those per theme (`THUMB_LIGHT` deepens blue and orange to 3:1 on the paper tone; `THUMB_DARK` maps every colour), and any other hex looks wrong in one theme.

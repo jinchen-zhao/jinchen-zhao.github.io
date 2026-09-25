@@ -3,20 +3,10 @@ node_modules/
 .DS_Store
 __pycache__/
 
-# Thumbnail work folders: keep the figure code, data, docs and final renders;
-# the skill's copied tooling and the downloaded papers are regenerable.
-figures/*/engine/
-figures/*/tools/
-figures/*/demo/
-figures/*/blender/
-figures/*/fonts/
-figures/*/paper/
-figures/*/src.tar.gz
-figures/*/*.pdf
-figures/*/figure/out/*
-!figures/*/figure/out/thumb.svg
-!figures/*/figure/out/thumb.png
-figures/*/figure/_versions/
-figures/*/docs/refs/
-figures/*/docs/zoom/
-figures/contact-sheet*.png
+# Thumbnail design work lives outside this public repository
+# (career/website-figures/); only the finished SVGs in static/pubs/ are here.
+figures/
+
+# The build's test post stays local: `python build.py --drafts` previews it.
+content/blog/2026-09-25-style-test.md
+content/blog/style-test/
