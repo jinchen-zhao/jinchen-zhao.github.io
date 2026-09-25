@@ -195,7 +195,11 @@ def build(drafts):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"),
                              autoescape=jinja2.select_autoescape(["html"]))
     env.filters["longdate"] = lambda d: f"{d.day} {d.strftime('%B %Y')}"
-    ctx = {"site": site, "year": dt.date.today().year,
+    # Fingerprint the stylesheet so browsers fetch it again whenever it changes
+    # (GitHub Pages lets them cache it for 10 minutes otherwise).
+    import hashlib
+    css_v = hashlib.sha1((ROOT / "static" / "style.css").read_bytes()).hexdigest()[:8]
+    ctx = {"site": site, "year": dt.date.today().year, "css_v": css_v,
            "updated": dt.date.today().strftime("%B %Y")}
 
     # Empty _site/ rather than delete it: on Windows a running preview server
