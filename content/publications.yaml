@@ -1,11 +1,13 @@
 # Newest first. `me` is bolded automatically wherever it appears in `authors`.
-# `venue` is the short label shown in the margin; `links` render as [label] links.
+# `thumb` is the slug of static/pubs/<slug>.svg (drawn from figures/<slug>/);
+# `links` render as [label] links.
 # Keep in step with career/cv/academic/main.tex.
 
 me: Jinchen Zhao
 
 papers:
   - title: How Good Are Frontier Models at Physics? Expert Re-Grading Reveals Broken Evaluations and Near-Saturation of Leading Benchmarks
+    thumb: frontier-models
     authors: Ali Ansari, Haoran Sun, et al. (51 authors, including Logan Wright and Jinchen Zhao)
     venue: arXiv
     year: 2026
@@ -14,6 +16,7 @@ papers:
       - {label: arXiv, url: "https://arxiv.org/abs/2609.13009"}
 
   - title: Nature of granular drag in microgravity
+    thumb: granular-drag
     authors: Tivadar Pongó*, Tianhui Liao*, Jinchen Zhao, Valentin Dichtl, Simeon Völkel, Raúl Cruz Hidalgo, Kai Huang
     venue: arXiv
     year: 2026
@@ -22,6 +25,7 @@ papers:
       - {label: arXiv, url: "https://arxiv.org/abs/2603.03006"}
 
   - title: Anomalous criticality with bounded fluctuations and long-range frustration induced by broken time-reversal symmetry
+    thumb: anomalous-criticality
     authors: Jinchen Zhao, Myung-Joong Hwang
     venue: PRR
     year: 2023
@@ -31,6 +35,7 @@ papers:
       - {label: arXiv, url: "https://arxiv.org/abs/2208.02268"}
 
   - title: Frustrated Superradiant Phase Transition
+    thumb: frustrated-spt
     authors: Jinchen Zhao, Myung-Joong Hwang
     venue: PRL
     year: 2022
@@ -40,6 +45,7 @@ papers:
       - {label: arXiv, url: "https://arxiv.org/abs/2112.01470"}
 
   - title: Embedded Inertial Sensor for Tracking Projectile Impact on Granular Media
+    thumb: imu-granular
     authors: Stefan Köstler, Jinchen Zhao, Chen Lyu, Simeon Völkel, Kai Huang
     venue: EPJ WoC
     year: 2021

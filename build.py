@@ -94,6 +94,45 @@ def bold_me(authors, me):
     return a.replace(html.escape(me), f"<strong>{html.escape(me)}</strong>")
 
 
+# Dark-mode palette for the publication thumbnails (figures/BRIEF.md palette).
+# Injected into each SVG as CSS, so the image follows the reader's OS theme
+# even when shown through <img>. Role hues are only lifted a little.
+THUMB_DARK = {
+    "#F4F2ED": "#1D1C1A",   # paper background
+    "#FFFFFF": "#2B2A27", "#FFF": "#2B2A27",
+    "#E4E6EA": "#393C41",
+    "#C8D3D8": "#4F5961",
+    "#3D4652": "#D7DBE0",   # ink
+    "#3A8FD0": "#5AA8E8",
+    "#D9822B": "#EC9A4E",
+    "#D93A3A": "#F06060",
+    "#9DC4E6": "#3E7099",   # off-palette pale blue (granular-drag)
+}
+
+
+# Light mode deepens the two role hues so they reach 3:1 contrast on the paper
+# tone (orange was 2.6:1, blue 3.1:1). Sources keep the brief's hexes.
+THUMB_LIGHT = {
+    "#3A8FD0": "#2F80C4",
+    "#D9822B": "#C8701C",
+}
+
+
+def _recolour(mapping):
+    return "".join(
+        f'[fill="{k}" i]{{fill:{v}}}[stroke="{k}" i]{{stroke:{v}}}[stop-color="{k}" i]{{stop-color:{v}}}'
+        for k, v in mapping.items())
+
+
+def darkmode_svg(path):
+    # Dark rules come last so they win over the light remap in dark mode.
+    style = (f"<style>{_recolour(THUMB_LIGHT)}"
+             f"@media (prefers-color-scheme: dark){{{_recolour(THUMB_DARK)}}}</style>")
+    svg = path.read_text(encoding="utf-8")
+    svg = re.sub(r"(<svg\b[^>]*>)", lambda m: m.group(1) + style, svg, count=1)
+    path.write_text(svg, encoding="utf-8")
+
+
 def atom_feed(site, posts):
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     items = []
@@ -123,6 +162,15 @@ def build(drafts):
     site["service_html"] = [md_inline(s) for s in site.get("service", [])]
     for p in pubs["papers"]:
         p["authors_html"] = bold_me(p["authors"], pubs["me"])
+        # Thumbnail art: static/pubs/<slug>.svg, alt text from the first line of
+        # figures/<slug>/docs/caption.md. A missing SVG leaves an empty tile.
+        slug = p.get("thumb")
+        if slug and (ROOT / "static" / "pubs" / f"{slug}.svg").exists():
+            p["thumb_url"] = f"/pubs/{slug}.svg"
+            cap = ROOT / "figures" / slug / "docs" / "caption.md"
+            lines = [l.strip() for l in cap.read_text(encoding="utf-8").splitlines()
+                     if l.strip() and not l.startswith("#")] if cap.exists() else []
+            p["thumb_alt"] = re.sub(r"^\**alt( text)?\**:?\**\s*", "", lines[0], flags=re.I) if lines else p["title"]
 
     posts = [read_post(f) for f in sorted(BLOG.glob("*.md"))]
     posts = [p for p in posts if drafts or not p["draft"]]
@@ -147,6 +195,8 @@ def build(drafts):
                 pass
     shutil.copytree(ROOT / "static", OUT, dirs_exist_ok=True)
     (OUT / ".nojekyll").write_text("")
+    for svg in (OUT / "pubs").glob("*.svg"):
+        darkmode_svg(svg)
 
     def write(rel, text):
         dest = OUT / rel
