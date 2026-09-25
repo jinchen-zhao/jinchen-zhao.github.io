@@ -12,7 +12,9 @@ import {liteAdaptor} from 'mathjax-full/js/adaptors/liteAdaptor.js';
 import {RegisterHTMLHandler} from 'mathjax-full/js/handlers/html.js';
 import {AllPackages} from 'mathjax-full/js/input/tex/AllPackages.js';
 
-const FONTS = 'https://cdn.jsdelivr.net/npm/mathjax-full@3.2.2/es5/output/chtml/fonts/woff-v2';
+// Fonts come from the CDN copy of the exact MathJax version installed here.
+const {version} = JSON.parse(readFileSync(new URL('./node_modules/mathjax-full/package.json', import.meta.url), 'utf8'));
+const FONTS = `https://cdn.jsdelivr.net/npm/mathjax-full@${version}/es5/output/chtml/fonts/woff-v2`;
 const ENV = 'equation|align|gather|multline|flalign|alignat|eqnarray';
 // \[ \begin{align} .. \end{align} \] is a nesting error in MathJax: drop the outer \[ \].
 const nested = new RegExp(String.raw`\\\[\s*(\\begin\{(${ENV})\*?\}[\s\S]*?\\end\{\2\*?\})\s*\\\]`, 'g');

@@ -248,3 +248,30 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 .citation a { text-decoration: none; }
 #refs .csl-entry { display: flex; gap: .6em; padding-left: 0; text-indent: 0; }
 #refs .csl-left-margin { flex: 0 0 2em; color: var(--faint); }
+
+/* post byline, citation footer, figures */
+.post .authors { margin: .7rem 0 0; font: 500 .95rem/1.4 var(--sans); color: var(--text); }
+.post .authors .affil { font-weight: 400; color: var(--muted); }
+.post .byline { margin-top: .25rem; }
+.post .byline a { color: var(--muted); }
+
+.post-footer { margin-top: 3.5rem; font: .85rem/1.6 var(--sans); color: var(--muted); }
+.post-footer .cite-line { margin: 0 0 .8rem; color: var(--text); overflow-wrap: anywhere; }
+.bibtex { position: relative; }
+.bibtex pre { margin: 0; font-size: .78rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bibtex .copy {
+  position: absolute; top: .5rem; right: .5rem;
+  font: 500 .72rem var(--sans); padding: .2rem .55rem; border-radius: 3px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--bg); color: var(--muted);
+}
+.bibtex .copy:hover { color: var(--text); border-color: var(--muted); }
+.post-footer .license { margin: 1rem 0 0; }
+
+.prose figure { margin: 2.2em 0; }
+.prose figure img { border-radius: 4px; }
+.prose figure:has(img.wide) { margin-left: -6rem; margin-right: -6rem; }
+@media (max-width: 58rem) { .prose figure:has(img.wide) { margin-left: 0; margin-right: 0; } }
+.prose figcaption { text-align: left; max-width: 38rem; margin: .7rem auto 0; }
+.prose figcaption strong { color: var(--text); font-weight: 600; }
+/* Figures fill their box unless the post gives a width ({width=55%}). */
+.prose figure img:not([style*="width"]) { width: 100%; }

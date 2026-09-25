@@ -2,17 +2,45 @@
 {% block title %}{{ post.title }} · {{ site.name }}{% endblock %}
 {% block description %}{{ post.summary or post.title }}{% endblock %}
 {% block og_type %}article{% endblock %}
+{% block og_image %}{{ post.image or site.photo }}{% endblock %}
+{% block head %}
+<meta name="citation_title" content="{{ post.title }}">
+{% for a in post.authors %}<meta name="citation_author" content="{{ a }}">
+{% endfor %}<meta name="citation_publication_date" content="{{ post.date.strftime('%Y/%m/%d') }}">
+<meta name="citation_journal_title" content="{{ site.url.split('//')[1] }}">
+<meta name="citation_fulltext_html_url" content="{{ site.url }}{{ post.url }}">
+{% if post.doi %}<meta name="citation_doi" content="{{ post.doi }}">{% endif %}
+<meta name="dc.rights" content="{{ site.license.name }}">
+<link rel="license" href="{{ site.license.url }}">
+{% endblock %}
 {% block path %}{{ post.url }}{% endblock %}
 {% block main %}
 <article class="post">
   <header>
     <h1>{{ post.title }}</h1>
-    <p class="byline"><time datetime="{{ post.date.isoformat() }}">{{ post.date | longdate }}</time>{% if post.draft %} · <em class="draft">draft</em>{% endif %}</p>
+    <p class="authors">{{ post.authors | join(", ") }}{% if post.affiliation %}<span class="affil"> · {{ post.affiliation }}</span>{% endif %}</p>
+    <p class="byline"><time datetime="{{ post.date.isoformat() }}">{{ post.date | longdate }}</time>{% if post.doi %} · <a href="https://doi.org/{{ post.doi }}">doi:{{ post.doi }}</a>{% endif %}{% if post.draft %} · <em class="draft">draft</em>{% endif %}</p>
   </header>
   {% if post.toc %}{{ post.toc | safe }}{% endif %}
   <div class="prose">
 {{ post.body | safe }}
   </div>
+  <footer class="post-footer">
+    <h2>Cite as</h2>
+    <p class="cite-line">{{ post.cite_line }}</p>
+    <div class="bibtex"><button type="button" class="copy" data-copy="bibtex">Copy BibTeX</button><pre id="bibtex">{{ post.bibtex }}</pre></div>
+    <p class="license">Text and figures are licensed under <a href="{{ site.license.url }}" rel="license">{{ site.license.name }}</a>, unless noted otherwise.</p>
+  </footer>
 </article>
+<script>
+document.querySelectorAll("button.copy").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var text = document.getElementById(b.dataset.copy).textContent;
+    navigator.clipboard.writeText(text).then(function () {
+      b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy BibTeX"; }, 1500);
+    });
+  });
+});
+</script>
 <p class="more"><a href="/blog/">← All posts</a></p>
 {% endblock %}

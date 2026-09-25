@@ -59,7 +59,7 @@ def md_inline(text):
     return out
 
 
-def read_post(path):
+def read_post(path, site):
     raw = path.read_text(encoding="utf-8")
     m = re.match(r"^---\n(.*?)\n---\n", raw, re.S)
     if not m:
@@ -71,6 +71,7 @@ def read_post(path):
     slug = meta.get("slug") or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", path.stem)
     args = ["-f", "markdown+tex_math_dollars+raw_tex", "-t", "html5",
             "--math-method=mathjax", "--wrap=none", "--section-divs",
+            "--lua-filter", str(ROOT / "filters" / "figures.lua"),
             "--citeproc", "--bibliography", str(BLOG / "refs.bib"), "--csl", str(BLOG / "aps.csl"),
             "--metadata", "link-citations=true",
             "--metadata", "reference-section-title=",
@@ -81,12 +82,52 @@ def read_post(path):
     toc = ""
     if meta.get("toc"):
         toc, _, body = body.partition("<!--BODY-->")
+    authors = meta.get("authors") or [site["name"]]
+    if isinstance(authors, str):
+        authors = [authors]
+    image = meta.get("image")
+    # Preview cards need a raster image: for an SVG use a PNG of the same name
+    # next to it if there is one, else fall back to the portrait.
+    if image and image.lower().endswith(".svg"):
+        png = image[:-4] + ".png"
+        image = png if (BLOG / slug / png).exists() else None
     return {
         "title": meta["title"], "date": date, "slug": slug,
         "summary": meta.get("summary", ""), "draft": bool(meta.get("draft")),
         "toc": toc.strip(), "body": body, "url": f"/blog/{slug}/",
-        "src": path.name,
+        "src": path.name, "authors": authors,
+        "affiliation": meta.get("affiliation", ""), "doi": meta.get("doi", ""),
+        # Preview-card image: a file in content/blog/<slug>/, else the portrait.
+        "image": f"/blog/{slug}/{image}" if image else None,
     }
+
+
+def surname_first(name):
+    parts = name.split()
+    return f"{parts[-1]}, {' '.join(parts[:-1])}" if len(parts) > 1 else name
+
+
+def citation(post, site):
+    """The "Cite as" line and BibTeX for a post (Lil'Log's pattern)."""
+    host = site["url"].split("//", 1)[1]
+    url = site["url"] + post["url"]
+    d = post["date"]
+    names = [surname_first(post["authors"][0])] + post["authors"][1:]
+    who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + (", and " if len(names) > 2 else " and ") + names[-1]
+    title_word = re.sub(r"[^a-z0-9]", "", post["title"].split()[0].lower()) or "post"
+    key = f"{re.sub(r'[^a-z]', '', post['authors'][0].split()[-1].lower())}{d.year}{title_word}"
+    line = f"{who}. ({d.strftime('%b %Y')}). {post['title']}. {host}. "
+    line += f"https://doi.org/{post['doi']}" if post["doi"] else url
+    fields = [("title", post["title"]),
+              ("author", " and ".join(surname_first(a) for a in post["authors"])),
+              ("journal", host), ("year", str(d.year)), ("month", d.strftime("%b")),
+              ("url", url)]
+    if post["doi"]:
+        fields.append(("doi", post["doi"]))
+    width = max(len(k) for k, _ in fields)
+    bib = f"@article{{{key},\n" + ",\n".join(
+        f"  {k.ljust(width)} = {{{v}}}" for k, v in fields) + "\n}"
+    return line, bib
 
 
 def bold_me(authors, me):
@@ -157,13 +198,17 @@ def atom_feed(site, posts):
         items.append(
             f"<entry><title>{html.escape(p['title'])}</title>"
             f"<link href=\"{site['url']}{p['url']}\"/><id>{site['url']}{p['url']}</id>"
-            f"<updated>{ts}</updated><summary>{html.escape(p['summary'])}</summary></entry>")
+            f"<updated>{ts}</updated>"
+            + "".join(f"<author><name>{html.escape(a)}</name></author>" for a in p["authors"])
+            + f"<summary>{html.escape(p['summary'])}</summary>"
+            f"<content type=\"html\">{html.escape(p['body'])}</content></entry>")
     return ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
             "<feed xmlns=\"http://www.w3.org/2005/Atom\">"
             f"<title>{html.escape(site['name'])}</title>"
             f"<link href=\"{site['url']}/blog/\"/><link rel=\"self\" href=\"{site['url']}/feed.xml\"/>"
             f"<id>{site['url']}/</id><updated>{now}</updated>"
             f"<author><name>{html.escape(site['name'])}</name></author>"
+            f"<rights>{html.escape(site['license']['name'])}: {site['license']['url']}</rights>"
             + "".join(items) + "</feed>\n")
 
 
@@ -188,7 +233,9 @@ def build(drafts):
                      if l.strip() and not l.startswith("#")] if cap.exists() else []
             p["thumb_alt"] = re.sub(r"^\**alt( text)?\**:?\**\s*", "", lines[0], flags=re.I) if lines else p["title"]
 
-    posts = [read_post(f) for f in sorted(BLOG.glob("*.md"))]
+    posts = [read_post(f, site) for f in sorted(BLOG.glob("*.md"))]
+    for p in posts:
+        p["cite_line"], p["bibtex"] = citation(p, site)
     posts = [p for p in posts if drafts or not p["draft"]]
     posts.sort(key=lambda p: p["date"], reverse=True)
 
@@ -240,6 +287,11 @@ def build(drafts):
         assets = BLOG / p["slug"]
         if assets.is_dir():
             shutil.copytree(assets, OUT / "blog" / p["slug"], dirs_exist_ok=True)
+            # SVGs drawn by the schematic-figure skill (root carries data-name)
+            # use the thumbnail palette, so they follow the theme the same way.
+            for svg in (OUT / "blog" / p["slug"]).rglob("*.svg"):
+                if re.search(r"<svg\b[^>]*\bdata-name=", svg.read_text(encoding="utf-8")[:2000]):
+                    darkmode_svg(svg)
     write("404.html", env.get_template("404.html").render(**ctx, page="404"))
     write("feed.xml", atom_feed(site, [p for p in posts if not p["draft"]]))
 
