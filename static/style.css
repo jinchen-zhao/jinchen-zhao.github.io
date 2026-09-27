@@ -321,7 +321,7 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
   order: -1; margin: 0 0 .45rem; max-width: none; text-align: left;
   font: 600 .72rem/1.2 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
 }
-.prose .gallery-panel:nth-child(2) figcaption { color: var(--accent); }
+.prose .gallery-panel:last-child figcaption { color: var(--accent); }
 .gallery-credit { margin: .8rem 0 0; font: .8rem/1.5 var(--sans); color: var(--muted); }
 .gallery-credit a { color: inherit; }
 
