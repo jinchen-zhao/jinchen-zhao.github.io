@@ -42,6 +42,8 @@ Every post ends with a "Cite as" line, BibTeX with a copy button and the license
     python build.py --serve          # drafts included, http://localhost:8000
     python build.py                  # what CI runs
 
+`python editor.py` serves a live editor at http://localhost:8001/edit: it re-renders only the post being edited and patches the preview in place. A comparison gallery is a fenced `.gallery` div of `.slide` divs (attributes `field`, `title`, `venue`, `doi`, `license`), each holding two images labelled by their alt text (see `filters/gallery.lua`).
+
 The visit counter is configured by the `GOATCOUNTER` repository variable, not in the repository. Needs Python with `jinja2` and `pyyaml`, Node, and pandoc 3.x (`--math-method`, `--syntax-highlighting`); CI pins pandoc 3.11. If pandoc is not on PATH, set `$PANDOC`.
 
 ## Conventions
