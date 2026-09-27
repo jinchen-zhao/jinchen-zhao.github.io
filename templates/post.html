@@ -41,6 +41,114 @@ document.querySelectorAll("button.copy").forEach(function (b) {
     });
   });
 });
+// Comparison galleries (filters/gallery.lua): tabs, arrows, swipe, and a timer that
+// advances when the active tab's progress bar finishes. Hover, focus or scrolling
+// away holds it; any manual choice stops it. No timer under reduced motion.
+function initGallery(g) {
+  var slides = Array.prototype.slice.call(g.querySelectorAll(".gallery-slide"));
+  if (!slides.length) return;
+  var MS = 7000, i = 0;
+  var icon = {
+    prev: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg>',
+    next: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 3 5 5-5 5"/></svg>',
+    pause: '<svg viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="3" width="3" height="10"/><rect x="9" y="3" width="3" height="10"/></svg>',
+    play: '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3v10l8-5z"/></svg>'
+  };
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html) e.innerHTML = html; return e; }
+  var tabs = el("div", "gallery-tabs"), stage = el("div", "gallery-stage"), nav = el("div", "gallery-nav");
+  tabs.setAttribute("role", "tablist");
+  var buttons = slides.map(function (s, k) {
+    var b = el("button", "gallery-tab");
+    b.type = "button"; b.textContent = s.dataset.field; b.setAttribute("role", "tab");
+    b.addEventListener("click", function () { stop(); show(k); });
+    tabs.appendChild(b); stage.appendChild(s);
+    return b;
+  });
+  var count = el("span", "gallery-count"), prev = el("button", "", icon.prev), toggle = el("button", ""), next = el("button", "", icon.next);
+  prev.type = next.type = toggle.type = "button";
+  prev.setAttribute("aria-label", "Previous"); next.setAttribute("aria-label", "Next");
+  [count, prev, toggle, next].forEach(function (e) { nav.appendChild(e); });
+  g.appendChild(tabs); g.appendChild(stage); g.appendChild(nav);
+  g.classList.add("js");
+  g.style.setProperty("--gallery-ms", MS + "ms");
+
+  function show(k) {
+    var h0 = stage.offsetHeight;
+    i = (k + slides.length) % slides.length;
+    slides.forEach(function (s, j) { s.classList.toggle("active", j === i); s.setAttribute("aria-hidden", j !== i); });
+    buttons.forEach(function (b, j) { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
+    // Keep the active tab visible in the tab row without scrolling the page.
+    var b = buttons[i];
+    if (b.offsetLeft < tabs.scrollLeft) tabs.scrollLeft = b.offsetLeft;
+    else if (b.offsetLeft + b.offsetWidth > tabs.scrollLeft + tabs.clientWidth) tabs.scrollLeft = b.offsetLeft + b.offsetWidth - tabs.clientWidth;
+    count.textContent = (i + 1) + " / " + slides.length;
+    // Animate the stage from the old slide's height to the new one's.
+    var h1 = slides[i].offsetHeight;
+    if (h0 && h0 !== h1) {
+      stage.style.height = h0 + "px";
+      stage.offsetHeight;
+      stage.style.height = h1 + "px";
+    }
+  }
+  stage.addEventListener("transitionend", function (e) { if (e.target === stage) stage.style.height = ""; });
+  function setToggle() {
+    var on = g.classList.contains("playing");
+    toggle.innerHTML = on ? icon.pause : icon.play;
+    toggle.setAttribute("aria-label", on ? "Pause" : "Play");
+  }
+  function play() { g.classList.add("playing"); setToggle(); }
+  function stop() { g.classList.remove("playing"); setToggle(); }
+  tabs.addEventListener("animationend", function () { if (g.classList.contains("playing")) show(i + 1); });
+  prev.addEventListener("click", function () { stop(); show(i - 1); });
+  next.addEventListener("click", function () { stop(); show(i + 1); });
+  toggle.addEventListener("click", function () { g.classList.contains("playing") ? stop() : (show(i + 1), play()); });
+  tabs.addEventListener("keydown", function (e) {
+    var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (d) { e.preventDefault(); stop(); show(i + d); buttons[i].focus(); }
+  });
+  var x0 = null;
+  stage.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
+  stage.addEventListener("pointerup", function (e) {
+    if (x0 !== null && Math.abs(e.clientX - x0) > 40) { stop(); show(i + (e.clientX < x0 ? 1 : -1)); }
+    x0 = null;
+  });
+  var hover = false, focus = false, seen = true;
+  function hold() { g.classList.toggle("hold", hover || focus || !seen); }
+  g.addEventListener("mouseenter", function () { hover = true; hold(); });
+  g.addEventListener("mouseleave", function () { hover = false; hold(); });
+  g.addEventListener("focusin", function () { focus = true; hold(); });
+  g.addEventListener("focusout", function () { focus = false; hold(); });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { seen = es[0].isIntersecting; hold(); }, {threshold: 0.4}).observe(g);
+  }
+  // Each panel grows in proportion to its image's aspect ratio, so the images in a
+  // pair share one height; the pair's width is capped so that height stays under MAXH.
+  var MAXH = 24; // rem
+  slides.forEach(function (s) {
+    var pair = s.querySelector(".gallery-pair"), panels = s.querySelectorAll(".gallery-panel");
+    function fit() {
+      var sum = 0;
+      for (var j = 0; j < panels.length; j++) {
+        var img = panels[j].querySelector("img");
+        if (!img.naturalWidth) return;
+        var a = img.naturalWidth / img.naturalHeight;
+        panels[j].style.flexGrow = a; sum += a;
+      }
+      var n = panels.length;
+      pair.style.maxWidth = "calc(" + (MAXH * sum) + "rem + " + n + " * (1.2rem + 2px) + " + (n - 1) + "rem)";
+    }
+    panels.forEach(function (f) {
+      var img = f.querySelector("img");
+      img.loading = "eager";
+      if (!img.complete) img.addEventListener("load", fit);
+    });
+    fit();
+  });
+  show(0);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) stop(); else play();
+}
+document.querySelectorAll(".gallery").forEach(initGallery);
+window.initGallery = initGallery; // editor.py re-runs it on galleries it patches in
 </script>
 <p class="more"><a href="/blog/">← All posts</a></p>
 {% endblock %}

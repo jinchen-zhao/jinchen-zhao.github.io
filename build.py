@@ -71,6 +71,7 @@ def read_post(path, site):
     slug = meta.get("slug") or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", path.stem)
     args = ["-f", "markdown+tex_math_dollars+raw_tex", "-t", "html5",
             "--math-method=mathjax", "--wrap=none", "--section-divs",
+            "--lua-filter", str(ROOT / "filters" / "gallery.lua"),
             "--lua-filter", str(ROOT / "filters" / "figures.lua"),
             "--citeproc", "--bibliography", str(BLOG / "refs.bib"), "--csl", str(BLOG / "aps.csl"),
             "--metadata", "link-citations=true",

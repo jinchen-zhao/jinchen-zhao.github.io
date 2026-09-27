@@ -275,3 +275,63 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 .prose figcaption strong { color: var(--text); font-weight: 600; }
 /* Figures fill their box unless the post gives a width ({width=55%}). */
 .prose figure img:not([style*="width"]) { width: 100%; }
+
+/* comparison gallery (filters/gallery.lua, script in templates/post.html) */
+.gallery { margin: 2.4em -6rem; font-family: var(--sans); }
+@media (max-width: 58rem) { .gallery { margin-left: 0; margin-right: 0; } }
+.gallery-tabs { position: relative; display: flex; gap: .3rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--rule); }
+.gallery-tabs::-webkit-scrollbar { display: none; }
+.gallery-tab {
+  position: relative; flex: 0 0 auto; padding: .5rem .75rem .6rem; border: 0; background: none; cursor: pointer;
+  font: 500 .82rem var(--sans); color: var(--muted);
+}
+.gallery-tab:hover { color: var(--text); }
+.gallery-tab[aria-selected="true"] { color: var(--text); }
+.gallery-tab::after {
+  content: ""; position: absolute; left: .75rem; right: .75rem; bottom: -1px; height: 2px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+}
+.gallery-tab[aria-selected="true"]::after { transform: scaleX(1); }
+.gallery.playing .gallery-tab[aria-selected="true"]::after { animation: gallery-progress var(--gallery-ms, 7000ms) linear; }
+@keyframes gallery-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* The stage takes the active slide's height; the script animates the change. */
+.gallery-stage { position: relative; margin-top: 1rem; touch-action: pan-y; transition: height .4s ease; }
+.prose .gallery-slide { margin: 0; }
+.gallery.js .gallery-slide {
+  position: absolute; top: 0; left: 0; right: 0;
+  opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility 0s linear .45s;
+}
+.gallery.js .gallery-slide.active { position: relative; opacity: 1; visibility: visible; transition: opacity .45s ease; }
+.gallery:not(.js) .gallery-slide + .gallery-slide { margin-top: 2rem; }
+.gallery:not(.js) .gallery-slide::before { content: attr(data-field); display: block; font: 600 .85rem var(--sans); margin-bottom: .5rem; }
+
+.gallery-pair { display: flex; gap: 1rem; align-items: flex-start; margin: 0 auto; }
+@media (max-width: 40rem) {
+  .gallery-pair { flex-direction: column; align-items: stretch; max-width: none !important; }
+  .prose .gallery-panel { flex: none !important; }
+}
+/* The script sets each panel's flex-grow to its image's aspect ratio, so both images share one height. */
+.prose .gallery-panel { margin: 0; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.gallery-panel a {
+  display: block; padding: .6rem; background: #fff; border: 1px solid var(--rule); border-radius: 6px;
+}
+.prose .gallery-panel img { width: 100%; height: auto; border-radius: 0; }
+.prose .gallery-panel figcaption {
+  order: -1; margin: 0 0 .45rem; max-width: none; text-align: left;
+  font: 600 .72rem/1.2 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
+.prose .gallery-panel:nth-child(2) figcaption { color: var(--accent); }
+.gallery-credit { margin: .8rem 0 0; font: .8rem/1.5 var(--sans); color: var(--muted); }
+.gallery-credit a { color: inherit; }
+
+.gallery-nav { display: flex; align-items: center; justify-content: flex-end; gap: .4rem; margin-top: .6rem; }
+.gallery-count { margin-right: auto; font: .78rem var(--sans); color: var(--faint); font-variant-numeric: tabular-nums; }
+.gallery-nav button {
+  width: 2rem; height: 2rem; display: grid; place-items: center; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 50%; background: var(--bg); color: var(--muted);
+}
+.gallery-nav button:hover { color: var(--text); border-color: var(--muted); }
+.gallery-nav svg { width: 14px; height: 14px; }
+.gallery.hold .gallery-tab::after { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .gallery.js .gallery-slide { transition: none; } }
