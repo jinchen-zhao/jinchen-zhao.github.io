@@ -73,8 +73,7 @@ function initGallery(g) {
   g.style.setProperty("--gallery-ms", MS + "ms");
 
   function show(k) {
-    var h0 = stage.offsetHeight;
-    i = (k + slides.length) % slides.length;
+    i =(k + slides.length) % slides.length;
     slides.forEach(function (s, j) { s.classList.toggle("active", j === i); s.setAttribute("aria-hidden", j !== i); });
     buttons.forEach(function (b, j) { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
     // Keep the active tab visible in the tab row without scrolling the page.
@@ -82,15 +81,8 @@ function initGallery(g) {
     if (b.offsetLeft < tabs.scrollLeft) tabs.scrollLeft = b.offsetLeft;
     else if (b.offsetLeft + b.offsetWidth > tabs.scrollLeft + tabs.clientWidth) tabs.scrollLeft = b.offsetLeft + b.offsetWidth - tabs.clientWidth;
     count.textContent = (i + 1) + " / " + slides.length;
-    // Animate the stage from the old slide's height to the new one's.
-    var h1 = slides[i].offsetHeight;
-    if (h0 && h0 !== h1) {
-      stage.style.height = h0 + "px";
-      stage.offsetHeight;
-      stage.style.height = h1 + "px";
-    }
+    pick(slides[i]);
   }
-  stage.addEventListener("transitionend", function (e) { if (e.target === stage) stage.style.height = ""; });
   function setToggle() {
     var on = g.classList.contains("playing");
     toggle.innerHTML = on ? icon.pause : icon.play;
@@ -121,28 +113,32 @@ function initGallery(g) {
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(function (es) { seen = es[0].isIntersecting; hold(); }, {threshold: 0.4}).observe(g);
   }
-  // Each panel grows in proportion to its image's aspect ratio, so the images in a
-  // pair share one height; the pair's width is capped so that height stays under MAXH.
-  var MAXH = 24; // rem
+  // One version of the figure at a time, at full gallery width (side by side, a
+  // published Fig. 1 shrinks to unreadable). Buttons named by each image's alt text
+  // switch it in place; the choice carries over to the next slide.
+  var want = null;
+  function pick(s) {
+    var panels = [].slice.call(s.querySelectorAll(".gallery-panel")), bs = [].slice.call(s.querySelectorAll(".gallery-versions button"));
+    if (!bs.length) return;
+    var k = bs.map(function (b) { return b.textContent; }).indexOf(want);
+    if (k < 0) k = bs.length - 1;
+    panels.forEach(function (f, j) { f.classList.toggle("on", j === k); });
+    bs.forEach(function (b, j) { b.setAttribute("aria-pressed", j === k); });
+  }
   slides.forEach(function (s) {
-    var pair = s.querySelector(".gallery-pair"), panels = s.querySelectorAll(".gallery-panel");
-    function fit() {
-      var sum = 0;
-      for (var j = 0; j < panels.length; j++) {
-        var img = panels[j].querySelector("img");
-        if (!img.naturalWidth) return;
-        var a = img.naturalWidth / img.naturalHeight;
-        panels[j].style.flexGrow = a; sum += a;
-      }
-      var n = panels.length;
-      pair.style.maxWidth = "calc(" + (MAXH * sum) + "rem + " + n + " * (1.2rem + 2px) + " + (n - 1) + "rem)";
-    }
+    var panels = [].slice.call(s.querySelectorAll(".gallery-panel"));
+    panels.forEach(function (f) { f.querySelector("img").loading = "eager"; });
+    if (panels.length < 2) { panels.forEach(function (f) { f.classList.add("on"); }); return; }
+    var bar = el("div", "gallery-versions");
+    bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Figure version");
     panels.forEach(function (f) {
-      var img = f.querySelector("img");
-      img.loading = "eager";
-      if (!img.complete) img.addEventListener("load", fit);
+      var b = el("button", "");
+      b.type = "button"; b.textContent = f.querySelector("figcaption").textContent;
+      b.addEventListener("click", function () { stop(); want = b.textContent; pick(s); });
+      bar.appendChild(b);
     });
-    fit();
+    s.insertBefore(bar, s.firstChild);
+    pick(s);
   });
   show(0);
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) stop(); else play();

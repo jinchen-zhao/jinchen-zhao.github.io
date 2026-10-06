@@ -3,7 +3,7 @@
 --
 --   ::: {.gallery}
 --   ::: {.slide field="Physics" title="Paper title" venue="Nature Physics (2026)"
---        doi="10.1038/..." license="CC BY 4.0"}
+--        doi="10.1038/..." license="CC BY 4.0"}   (url="https://..." where there is no DOI)
 --   ![Published](gallery/phys-pub.jpg)
 --   ![Our skill](gallery/phys-ours.jpg)
 --   :::
@@ -34,6 +34,8 @@ local function slide_html(div)
     local t = esc(a.title)
     if a.doi then
       t = string.format('<a href="https://doi.org/%s">%s</a>', esc(a.doi), t)
+    elseif a.url then -- sources without a DOI (patents, government reports)
+      t = string.format('<a href="%s">%s</a>', esc(a.url), t)
     end
     credit = t
     if a.venue then credit = credit .. ", <em>" .. esc(a.venue) .. "</em>" end

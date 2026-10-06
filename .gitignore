@@ -7,11 +7,7 @@ __pycache__/
 # (career/website-figures/); only the finished SVGs in static/pubs/ are here.
 figures/
 
-# The build's test post stays local: `python build.py --drafts` previews it.
-content/blog/2026-09-25-style-test.md
-content/blog/style-test/
-
-# Posts in progress stay local until they are published (the repository is
-# public, so a committed draft is readable on GitHub even with `draft: true`).
-content/blog/2026-09-27-schematic-figure.md
-content/blog/schematic-figure/
+# Drafts, their agent reference versions and the live editor live in a
+# private repository nested here (the repository is public, so a committed
+# draft is readable on GitHub even with `draft: true`).
+private/

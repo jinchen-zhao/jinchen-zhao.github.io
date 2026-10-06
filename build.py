@@ -25,6 +25,9 @@ import yaml
 ROOT = Path(__file__).resolve().parent
 CONTENT = ROOT / "content"
 BLOG = CONTENT / "blog"
+# Posts in progress live in a private repository nested here (gitignored);
+# --drafts builds them next to the published posts. *.agent.md are reference drafts, never built.
+DRAFTS = ROOT / "private" / "drafts"
 OUT = ROOT / "_site"
 
 
@@ -91,12 +94,12 @@ def read_post(path, site):
     # next to it if there is one, else fall back to the portrait.
     if image and image.lower().endswith(".svg"):
         png = image[:-4] + ".png"
-        image = png if (BLOG / slug / png).exists() else None
+        image = png if (path.parent / slug / png).exists() else None
     return {
         "title": meta["title"], "date": date, "slug": slug,
         "summary": meta.get("summary", ""), "draft": bool(meta.get("draft")),
         "toc": toc.strip(), "body": body, "url": f"/blog/{slug}/",
-        "src": path.name, "authors": authors,
+        "src": path.name, "dir": path.parent, "authors": authors,
         "affiliation": meta.get("affiliation", ""), "doi": meta.get("doi", ""),
         # Preview-card image: a file in content/blog/<slug>/, else the portrait.
         "image": f"/blog/{slug}/{image}" if image else None,
@@ -234,7 +237,10 @@ def build(drafts):
             p["thumb_url"] = f"/pubs/{slug}.svg"
             p["thumb_alt"] = p.get("thumb_alt") or p["title"]
 
-    posts = [read_post(f, site) for f in sorted(BLOG.glob("*.md"))]
+    files = sorted(BLOG.glob("*.md"))
+    if drafts and DRAFTS.is_dir():
+        files += sorted(f for f in DRAFTS.glob("*.md") if not f.name.endswith(".agent.md"))
+    posts = [read_post(f, site) for f in files]
     for p in posts:
         p["cite_line"], p["bibtex"] = citation(p, site)
     posts = [p for p in posts if drafts or not p["draft"]]
@@ -284,8 +290,8 @@ def build(drafts):
                      env.get_template("post.html").render(**ctx, post=p, page="post"))
         if 'class="math' in p["body"]:
             math_pages.append(str(dest))
-        # Images and data next to a post live in content/blog/<slug>/.
-        assets = BLOG / p["slug"]
+        # Images and data next to a post live in <post folder>/<slug>/.
+        assets = p["dir"] / p["slug"]
         if assets.is_dir():
             shutil.copytree(assets, OUT / "blog" / p["slug"], dirs_exist_ok=True)
             # SVGs drawn by the schematic-figure skill (root carries data-name)

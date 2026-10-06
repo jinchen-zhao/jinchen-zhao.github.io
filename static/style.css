@@ -295,8 +295,12 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 .gallery.playing .gallery-tab[aria-selected="true"]::after { animation: gallery-progress var(--gallery-ms, 7000ms) linear; }
 @keyframes gallery-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-/* The stage takes the active slide's height; the script animates the change. */
-.gallery-stage { position: relative; margin-top: 1rem; touch-action: pan-y; transition: height .4s ease; }
+/* The stage takes the active slide's height; the arrows sit above it, so they never move. */
+.gallery-stage { position: relative; margin-top: 1rem; touch-action: pan-y; }
+/* Arrows sit between the tabs and the slide, where a change of slide height cannot move them. */
+.gallery.js { display: flex; flex-direction: column; }
+.gallery.js .gallery-nav { order: 1; margin: .6rem 0 0; }
+.gallery.js .gallery-stage { order: 2; margin-top: .6rem; }
 .prose .gallery-slide { margin: 0; }
 .gallery.js .gallery-slide {
   position: absolute; top: 0; left: 0; right: 0;
@@ -335,3 +339,20 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 .gallery-nav svg { width: 14px; height: 14px; }
 .gallery.hold .gallery-tab::after { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .gallery.js .gallery-slide { transition: none; } }
+
+/* Gallery, with the script: one version of a figure at a time at full width, picked by
+   the version buttons (a published Fig. 1 is made for a page, so side by side it shrinks
+   past reading). Without the script the versions stay side by side. */
+.gallery.js .gallery-pair { display: block; max-width: none !important; }
+.gallery.js .gallery-panel { display: none !important; }
+.gallery.js .gallery-panel.on { display: block !important; }
+.gallery.js .gallery-panel figcaption { display: none; }
+.gallery.js .gallery-panel a { display: flex; justify-content: center; }
+.gallery.js .gallery-panel img { width: auto !important; max-width: 100%; max-height: 36rem; }
+.gallery-versions { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0 0 .6rem; }
+.gallery-versions button {
+  font: 500 .8rem var(--sans); padding: .3rem .8rem; cursor: pointer;
+  border: 1px solid var(--rule); border-radius: 999px; background: var(--bg); color: var(--muted);
+}
+.gallery-versions button:hover { color: var(--text); border-color: var(--muted); }
+.gallery-versions button[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
