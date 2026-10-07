@@ -9,6 +9,7 @@ pandoc >= 3 on PATH or at $PANDOC, and `npm install` for MathJax.
 """
 
 import argparse
+import colorsys
 import datetime as dt
 import html
 import json
@@ -173,11 +174,37 @@ def _recolour(mapping):
         for k, v in mapping.items())
 
 
+def _flip(hexc):
+    """Dark-mode colour for any colour off the thumbnail palette: flip the lightness, keep the hue.
+    Near-black ink becomes near-white, pale fills become deep tones just above the page,
+    and strong mid-tone accents are lifted a little so they keep their contrast."""
+    h = hexc.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    hue, light, sat = colorsys.rgb_to_hls(r, g, b)
+    if sat > 0.35 and 0.3 < light < 0.7:
+        light = min(light + 0.12, 0.78)
+    else:
+        light = 0.11 + (1 - light) * 0.82    # 1 -> page tone, 0 -> 0.93
+    r, g, b = colorsys.hls_to_rgb(hue, light, sat)
+    return "#%02X%02X%02X" % (round(r * 255), round(g * 255), round(b * 255))
+
+
+def _svg_colours(svg):
+    found = set(re.findall(r'(?:fill|stroke|stop-color)="(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})"', svg))
+    known = {k.upper() for k in THUMB_DARK}
+    return {c: _flip(c) for c in found if c.upper() not in known}
+
+
 def darkmode_svg(path):
     # Dark rules come last so they win over the light remap in dark mode.
-    style = (f"<style>{_recolour(THUMB_LIGHT)}"
-             f"@media (prefers-color-scheme: dark){{{_recolour(THUMB_DARK)}}}</style>")
+    # Colours off the thumbnail palette get a general lightness flip, and the page
+    # background rectangle of a skill-drawn figure takes the dark paper tone.
     svg = path.read_text(encoding="utf-8")
+    general = _recolour(_svg_colours(svg)) + 'rect[data-role="background"][fill]{fill:#1D1C1A}'
+    style = (f"<style>{_recolour(THUMB_LIGHT)}"
+             f"@media (prefers-color-scheme: dark){{{general}{_recolour(THUMB_DARK)}}}</style>")
     svg = re.sub(r"(<svg\b[^>]*>)", lambda m: m.group(1) + style, svg, count=1)
     path.write_text(svg, encoding="utf-8")
 
