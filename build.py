@@ -86,6 +86,10 @@ def read_post(path, site):
     toc = ""
     if meta.get("toc"):
         toc, _, body = body.partition("<!--BODY-->")
+    # Authors' <!-- notes --> in the Markdown (internal scores, dates, to-dos) pass through pandoc into the HTML,
+    # where any reader could see them in the page source. Remove them (2026-10-07).
+    body = re.sub(r"<!--.*?-->\n?", "", body, flags=re.S)
+    toc = re.sub(r"<!--.*?-->\n?", "", toc, flags=re.S)
     authors = meta.get("authors") or [site["name"]]
     if isinstance(authors, str):
         authors = [authors]
