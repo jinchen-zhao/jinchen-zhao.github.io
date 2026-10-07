@@ -68,7 +68,9 @@ function initGallery(g) {
   prev.type = next.type = toggle.type = "button";
   prev.setAttribute("aria-label", "Previous"); next.setAttribute("aria-label", "Next");
   [count, prev, toggle, next].forEach(function (e) { nav.appendChild(e); });
-  g.appendChild(tabs); g.appendChild(stage); g.appendChild(nav);
+  // A gallery of one slide has nothing to step through: no counter, arrows or play button, and it never auto-plays.
+  var single = slides.length === 1;
+  g.appendChild(tabs); g.appendChild(stage); if (!single) g.appendChild(nav);
   g.classList.add("js");
   g.style.setProperty("--gallery-ms", MS + "ms");
 
@@ -141,7 +143,7 @@ function initGallery(g) {
     pick(s);
   });
   show(0);
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) stop(); else play();
+  if (single || window.matchMedia("(prefers-reduced-motion: reduce)").matches) stop(); else play();
 }
 document.querySelectorAll(".gallery").forEach(initGallery);
 window.initGallery = initGallery; // editor.py re-runs it on galleries it patches in
