@@ -187,7 +187,7 @@ h2 {
 .toc ul ul { padding-left: 1rem; }
 .toc a { color: var(--muted); }
 
-.prose { font-size: 1.125rem; line-height: 1.7; }
+.prose { font-size: 1.0625rem; line-height: 1.7; }
 .prose > * + *, .prose section > * + * { margin-top: 1.1em; }
 .prose p { margin: 0; }
 .prose p + p { margin-top: 1.1em; }
