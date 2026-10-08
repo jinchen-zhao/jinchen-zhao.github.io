@@ -1,0 +1,108 @@
+// Shared by the personal site and the LGW Lab blog. The source of truth is the personal site's
+// static/gallery.js; the lab blog keeps an exact copy (sync_shared.py). Edit the source, then sync.
+// Comparison galleries (filters/gallery.lua): tabs, arrows, swipe, and a timer that
+// advances when the active tab's progress bar finishes. Hover, focus or scrolling
+// away holds it; any manual choice stops it. No timer under reduced motion.
+function initGallery(g) {
+  var slides = Array.prototype.slice.call(g.querySelectorAll(".gallery-slide"));
+  if (!slides.length) return;
+  var MS = 7000, i = 0;
+  var icon = {
+    prev: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg>',
+    next: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 3 5 5-5 5"/></svg>',
+    pause: '<svg viewBox="0 0 16 16" fill="currentColor"><rect x="4" y="3" width="3" height="10"/><rect x="9" y="3" width="3" height="10"/></svg>',
+    play: '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3v10l8-5z"/></svg>'
+  };
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html) e.innerHTML = html; return e; }
+  var tabs = el("div", "gallery-tabs"), stage = el("div", "gallery-stage"), nav = el("div", "gallery-nav");
+  tabs.setAttribute("role", "tablist");
+  var buttons = slides.map(function (s, k) {
+    var b = el("button", "gallery-tab");
+    b.type = "button"; b.textContent = s.dataset.field; b.setAttribute("role", "tab");
+    b.addEventListener("click", function () { stop(); show(k); });
+    tabs.appendChild(b); stage.appendChild(s);
+    return b;
+  });
+  var count = el("span", "gallery-count"), prev = el("button", "", icon.prev), toggle = el("button", ""), next = el("button", "", icon.next);
+  prev.type = next.type = toggle.type = "button";
+  prev.setAttribute("aria-label", "Previous"); next.setAttribute("aria-label", "Next");
+  [count, prev, toggle, next].forEach(function (e) { nav.appendChild(e); });
+  // A gallery of one slide has nothing to step through: no counter, arrows or play button, and it never auto-plays.
+  var single = slides.length === 1;
+  g.appendChild(tabs); g.appendChild(stage); if (!single) g.appendChild(nav);
+  g.classList.add("js");
+  g.style.setProperty("--gallery-ms", MS + "ms");
+
+  function show(k) {
+    i =(k + slides.length) % slides.length;
+    slides.forEach(function (s, j) { s.classList.toggle("active", j === i); s.setAttribute("aria-hidden", j !== i); });
+    buttons.forEach(function (b, j) { b.setAttribute("aria-selected", j === i); b.tabIndex = j === i ? 0 : -1; });
+    // Keep the active tab visible in the tab row without scrolling the page.
+    var b = buttons[i];
+    if (b.offsetLeft < tabs.scrollLeft) tabs.scrollLeft = b.offsetLeft;
+    else if (b.offsetLeft + b.offsetWidth > tabs.scrollLeft + tabs.clientWidth) tabs.scrollLeft = b.offsetLeft + b.offsetWidth - tabs.clientWidth;
+    count.textContent = (i + 1) + " / " + slides.length;
+    pick(slides[i]);
+  }
+  function setToggle() {
+    var on = g.classList.contains("playing");
+    toggle.innerHTML = on ? icon.pause : icon.play;
+    toggle.setAttribute("aria-label", on ? "Pause" : "Play");
+  }
+  function play() { g.classList.add("playing"); setToggle(); }
+  function stop() { g.classList.remove("playing"); setToggle(); }
+  tabs.addEventListener("animationend", function () { if (g.classList.contains("playing")) show(i + 1); });
+  prev.addEventListener("click", function () { stop(); show(i - 1); });
+  next.addEventListener("click", function () { stop(); show(i + 1); });
+  toggle.addEventListener("click", function () { g.classList.contains("playing") ? stop() : (show(i + 1), play()); });
+  tabs.addEventListener("keydown", function (e) {
+    var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (d) { e.preventDefault(); stop(); show(i + d); buttons[i].focus(); }
+  });
+  var x0 = null;
+  stage.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
+  stage.addEventListener("pointerup", function (e) {
+    if (x0 !== null && Math.abs(e.clientX - x0) > 40) { stop(); show(i + (e.clientX < x0 ? 1 : -1)); }
+    x0 = null;
+  });
+  var hover = false, focus = false, seen = true;
+  function hold() { g.classList.toggle("hold", hover || focus || !seen); }
+  g.addEventListener("mouseenter", function () { hover = true; hold(); });
+  g.addEventListener("mouseleave", function () { hover = false; hold(); });
+  g.addEventListener("focusin", function () { focus = true; hold(); });
+  g.addEventListener("focusout", function () { focus = false; hold(); });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { seen = es[0].isIntersecting; hold(); }, {threshold: 0.4}).observe(g);
+  }
+  // One version of the figure at a time, at full gallery width (side by side, a
+  // published Fig. 1 shrinks to unreadable). Buttons named by each image's alt text
+  // switch it in place; the choice carries over to the next slide.
+  var want = null;
+  function pick(s) {
+    var panels = [].slice.call(s.querySelectorAll(".gallery-panel")), bs = [].slice.call(s.querySelectorAll(".gallery-versions button"));
+    if (!bs.length) return;
+    var k = bs.map(function (b) { return b.textContent; }).indexOf(want);
+    if (k < 0) k = bs.length - 1;
+    panels.forEach(function (f, j) { f.classList.toggle("on", j === k); });
+    bs.forEach(function (b, j) { b.setAttribute("aria-pressed", j === k); });
+  }
+  slides.forEach(function (s) {
+    var panels = [].slice.call(s.querySelectorAll(".gallery-panel"));
+    panels.forEach(function (f) { f.querySelector("img").loading = "eager"; });
+    if (panels.length < 2) { panels.forEach(function (f) { f.classList.add("on"); }); return; }
+    var bar = el("div", "gallery-versions");
+    bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Figure version");
+    panels.forEach(function (f) {
+      var b = el("button", "");
+      b.type = "button"; b.textContent = f.querySelector("figcaption").textContent;
+      b.addEventListener("click", function () { stop(); want = b.textContent; pick(s); });
+      bar.appendChild(b);
+    });
+    s.insertBefore(bar, s.firstChild);
+    pick(s);
+  });
+  show(0);
+  if (single || window.matchMedia("(prefers-reduced-motion: reduce)").matches) stop(); else play();
+}
+document.querySelectorAll(".gallery").forEach(initGallery);
+window.initGallery = initGallery;

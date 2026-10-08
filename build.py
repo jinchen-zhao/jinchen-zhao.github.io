@@ -23,6 +23,8 @@ from pathlib import Path
 import jinja2
 import yaml
 
+import sitekit
+
 ROOT = Path(__file__).resolve().parent
 CONTENT = ROOT / "content"
 BLOG = CONTENT / "blog"
@@ -168,45 +170,14 @@ THUMB_LIGHT = {
 }
 
 
-def _recolour(mapping):
-    return "".join(
-        f'[fill="{k}" i]{{fill:{v}}}[stroke="{k}" i]{{stroke:{v}}}[stop-color="{k}" i]{{stop-color:{v}}}'
-        for k, v in mapping.items())
-
-
-def _flip(hexc):
-    """Dark-mode colour for any colour off the thumbnail palette: flip the lightness, keep the hue.
-    Near-black ink becomes near-white, pale fills become deep tones just above the page,
-    and strong mid-tone accents are lifted a little so they keep their contrast."""
-    h = hexc.lstrip("#")
-    if len(h) == 3:
-        h = "".join(c * 2 for c in h)
-    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
-    hue, light, sat = colorsys.rgb_to_hls(r, g, b)
-    if sat > 0.35 and 0.3 < light < 0.7:
-        light = min(light + 0.12, 0.78)
-    else:
-        light = 0.11 + (1 - light) * 0.82    # 1 -> page tone, 0 -> 0.93
-    r, g, b = colorsys.hls_to_rgb(hue, light, sat)
-    return "#%02X%02X%02X" % (round(r * 255), round(g * 255), round(b * 255))
-
-
-def _svg_colours(svg):
-    found = set(re.findall(r'(?:fill|stroke|stop-color)="(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})"', svg))
-    known = {k.upper() for k in THUMB_DARK}
-    return {c: _flip(c) for c in found if c.upper() not in known}
+# The SVG dark-mode code is shared with the LGW Lab blog (sitekit.py).
+_recolour = sitekit.recolour
 
 
 def darkmode_svg(path):
-    # Dark rules come last so they win over the light remap in dark mode.
-    # Colours off the thumbnail palette get a general lightness flip, and the page
-    # background rectangle of a skill-drawn figure takes the dark paper tone.
-    svg = path.read_text(encoding="utf-8")
-    general = _recolour(_svg_colours(svg)) + 'rect[data-role="background"][fill]{fill:#1D1C1A}'
-    style = (f"<style>{_recolour(THUMB_LIGHT)}"
-             f"@media (prefers-color-scheme: dark){{{general}{_recolour(THUMB_DARK)}}}</style>")
-    svg = re.sub(r"(<svg\b[^>]*>)", lambda m: m.group(1) + style, svg, count=1)
-    path.write_text(svg, encoding="utf-8")
+    # Palette hexes follow THUMB_LIGHT and THUMB_DARK. Every other colour gets a lightness flip in dark mode, and
+    # the page background rectangle of a skill-drawn figure takes the dark paper tone.
+    sitekit.theme_svg(path, THUMB_DARK, THUMB_LIGHT, "#1D1C1A")
 
 
 def external_links_new_tab(html_text, site_url):
@@ -283,7 +254,8 @@ def build(drafts):
     # Fingerprint the stylesheet so browsers fetch it again whenever it changes
     # (GitHub Pages lets them cache it for 10 minutes otherwise).
     import hashlib
-    css_v = hashlib.sha1((ROOT / "static" / "style.css").read_bytes()).hexdigest()[:8]
+    css_v = hashlib.sha1((ROOT / "static" / "style.css").read_bytes()
+                         + (ROOT / "static" / "gallery.js").read_bytes()).hexdigest()[:8]
     ctx = {"site": site, "year": dt.date.today().year, "css_v": css_v,
            "updated": dt.date.today().strftime("%B %Y")}
 
