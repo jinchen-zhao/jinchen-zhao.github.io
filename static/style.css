@@ -277,8 +277,7 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 .prose figure img:not([style*="width"]) { width: 100%; }
 
 /* comparison gallery (filters/gallery.lua, script in templates/post.html) */
-.gallery { margin: 2.4em -6rem; font-family: var(--sans); }
-@media (max-width: 58rem) { .gallery { margin-left: 0; margin-right: 0; } }
+.gallery { margin: 2.4em 0; font-family: var(--sans); }
 .gallery-tabs { position: relative; display: flex; gap: .3rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--rule); }
 .gallery-tabs::-webkit-scrollbar { display: none; }
 .gallery-tab {
