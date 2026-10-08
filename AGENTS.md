@@ -36,6 +36,16 @@ Math is ordinary LaTeX: `$..$`, `$$..$$`, `\begin{equation}`/`align` with `\labe
 
 Every post ends with a "Cite as" line, BibTeX with a copy button and the license line; the head carries `citation_*` tags for Zotero and Google Scholar. Posts are CC BY 4.0 (`license` in `site.yaml`), which Rogue Scholar requires for DOIs. Google Scholar does not index blogs directly: a post gains a Scholar entry only when indexed papers cite it (or by "Add article manually" on a profile).
 
+## Figures in posts
+
+- The column is 704 px and body text is 18 px. Figure text renders at 14 to 16 px: labels and ticks 15 px, panel titles 16 px. Draw plots at the column width with `tools/plotstyle.py`, never narrower and stretched.
+- Figures carry no footnotes or notes. The caption holds them.
+- Before a post is shared, run `python tools/figaudit.py content/blog/<post>.md` (text sizes; every figure must stay within 12 to 20 px) and `python tools/figaudit.py --run <plot scripts>` (overlaps). Both must pass.
+- Use one name per thing across the text, the captions and the figure labels.
+- Before you quote a judge or a source next to a figure, look at the figures it refers to.
+- Agent-drafted text goes into a post without marker lines. Quote the drafted text in chat for review.
+- Before you edit a post on disk while the live editor is open, check the editor tab with `GET /api/status?name=<post>.md` (it must say `"safe": true`). Never reload the user's editor tab.
+
 ## Build and preview
 
     npm install                      # once, for MathJax
