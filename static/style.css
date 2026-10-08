@@ -269,16 +269,18 @@ a.footnote-ref sup { font: 600 .7em var(--sans); }
 
 .prose figure { margin: 2.2em 0; }
 .prose figure img { border-radius: 4px; }
-.prose figure:has(img.wide) { margin-left: -6rem; margin-right: -6rem; }
-@media (max-width: 58rem) { .prose figure:has(img.wide) { margin-left: 0; margin-right: 0; } }
-.prose figcaption { text-align: left; max-width: 38rem; margin: .7rem auto 0; }
+/* Figures and galleries are 60rem wide, 8rem past the text on each side, as on Anthropic's posts. Captions keep the
+   text width. On a narrow screen the figure returns to the text width. */
+.prose figure:not(.gallery-panel) { margin-left: -8rem; margin-right: -8rem; }
+@media (max-width: 63rem) { .prose figure:not(.gallery-panel) { margin-left: 0; margin-right: 0; } }
+.prose figcaption { text-align: left; max-width: var(--measure); margin: .7rem auto 0; }
 .prose figcaption strong { color: var(--text); font-weight: 600; }
 /* Figures fill their box unless the post gives a width ({width=55%}). */
 .prose figure img:not([style*="width"]) { width: 100%; }
 
 /* comparison gallery (filters/gallery.lua, script in templates/post.html) */
-.gallery { margin: 2.4em -6rem; font-family: var(--sans); }
-@media (max-width: 58rem) { .gallery { margin-left: 0; margin-right: 0; } }
+.gallery { margin: 2.4em -8rem; font-family: var(--sans); }
+@media (max-width: 63rem) { .gallery { margin-left: 0; margin-right: 0; } }
 .gallery-tabs { position: relative; display: flex; gap: .3rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--rule); }
 .gallery-tabs::-webkit-scrollbar { display: none; }
 .gallery-tab {
