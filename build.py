@@ -196,6 +196,25 @@ def external_links_new_tab(html_text, site_url):
     return re.sub(r"<a\b[^>]*>", fix, html_text)
 
 
+# AI suggestions: text that an agent puts into a post is marked with the Pandoc class `ai`,
+# as a fenced div (::: {.ai}) or a span ([text]{.ai}). The author accepts or rejects each
+# one in the editor. A post that is not a draft must not keep a marker.
+AI_MARK = re.compile(r'<(?:div|span)\b[^>]*\bclass="(?:[^"]*\s)?ai(?:\s[^"]*)?"')
+AI_CSS = (".ai{--ai:#c62828;--ai-bg:rgba(198,40,40,.08)}"
+          "@media (prefers-color-scheme:dark){.ai{--ai:#ef9a9a;--ai-bg:rgba(239,83,80,.16)}}"
+          "div.ai{background:var(--ai-bg);border-left:3px solid var(--ai);padding:.5em .9em;border-radius:0 4px 4px 0}"
+          "span.ai{background:var(--ai-bg);text-decoration:underline 2px var(--ai);text-underline-offset:.2em;"
+          "-webkit-box-decoration-break:clone;box-decoration-break:clone}")
+
+
+def check_ai_markers(posts):
+    """Stop the build when a post that is not a draft still holds AI suggestions."""
+    bad = [p["src"] for p in posts if not p["draft"] and AI_MARK.search(p["body"] + p["toc"])]
+    if bad:
+        sys.exit("build stopped: these posts are not drafts but still have AI suggestions (.ai markers): "
+                 + ", ".join(bad) + ". Accept or reject each suggestion in the editor, or set draft: true.")
+
+
 def atom_feed(site, posts):
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     items = []
@@ -243,6 +262,7 @@ def build(drafts):
     if drafts and DRAFTS.is_dir():
         files += sorted(f for f in DRAFTS.glob("*.md") if not f.name.endswith(".agent.md"))
     posts = [read_post(f, site) for f in files]
+    check_ai_markers(posts)
     for p in posts:
         p["cite_line"], p["bibtex"] = citation(p, site)
     posts = [p for p in posts if drafts or not p["draft"]]
@@ -289,8 +309,11 @@ def build(drafts):
         **ctx, posts=posts, page="blog"))
     math_pages = []
     for p in posts:
-        dest = write(f"blog/{p['slug']}/index.html",
-                     env.get_template("post.html").render(**ctx, post=p, page="post"))
+        page_html = env.get_template("post.html").render(**ctx, post=p, page="post")
+        if p["draft"] and AI_MARK.search(p["body"]):
+            # Only a draft can hold AI suggestions: its page gets the red styling in its head.
+            page_html = page_html.replace("</head>", f"<style>{AI_CSS}</style></head>", 1)
+        dest = write(f"blog/{p['slug']}/index.html", page_html)
         if 'class="math' in p["body"]:
             math_pages.append(str(dest))
         # Images and data next to a post live in <post folder>/<slug>/.
