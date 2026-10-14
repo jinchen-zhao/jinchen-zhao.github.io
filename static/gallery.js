@@ -76,12 +76,14 @@ function initGallery(g) {
   }
   // One version of the figure at a time, at full gallery width (side by side, a
   // published Fig. 1 shrinks to unreadable). Buttons named by each image's alt text
-  // switch it in place; the choice carries over to the next slide.
+  // switch it in place; the choice carries over to the next slide. Without a choice, a slide
+  // shows its panel marked data-default (an image with {.default}), else its last panel.
   var want = null;
   function pick(s) {
     var panels = [].slice.call(s.querySelectorAll(".gallery-panel")), bs = [].slice.call(s.querySelectorAll(".gallery-versions button"));
     if (!bs.length) return;
     var k = bs.map(function (b) { return b.textContent; }).indexOf(want);
+    if (k < 0) k = panels.map(function (f) { return f.hasAttribute("data-default"); }).indexOf(true);
     if (k < 0) k = bs.length - 1;
     panels.forEach(function (f, j) { f.classList.toggle("on", j === k); });
     bs.forEach(function (b, j) { b.setAttribute("aria-pressed", j === k); });
