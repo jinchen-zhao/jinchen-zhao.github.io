@@ -22,7 +22,7 @@
 {% block head %}{% endblock %}
 {% if site.goatcounter %}<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
 </head>
-{% set show_head = page != "home" or posts %}
+{% set show_head = page != "home" %}{# the homepage links the blog from its Writing section #}
 <body class="page-{{ page }}{% if not show_head %} no-head{% endif %}">
 {% if show_head %}
 <header class="masthead">
