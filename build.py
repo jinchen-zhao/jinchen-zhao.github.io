@@ -108,6 +108,9 @@ def read_post(path, site):
         "toc": toc.strip(), "body": body, "url": f"/blog/{slug}/",
         "src": path.name, "dir": path.parent, "authors": authors,
         "affiliation": meta.get("affiliation", ""), "doi": meta.get("doi", ""),
+        # A copy of a post first published elsewhere: the URL and name of the original. The page then points
+        # search engines and the citation to the original, so Scholar and the DOI see one record.
+        "canonical": meta.get("canonical", ""), "canonical_name": meta.get("canonical_name", ""),
         # Preview-card image: a file in content/blog/<slug>/, else the portrait.
         "image": f"/blog/{slug}/{image}" if image else None,
     }
@@ -122,6 +125,9 @@ def citation(post, site):
     """The "Cite as" line and BibTeX for a post (Lil'Log's pattern)."""
     host = site["url"].split("//", 1)[1]
     url = site["url"] + post["url"]
+    if post["canonical"]:  # cite the original, not this copy
+        url = post["canonical"]
+        host = url.split("//", 1)[1].split("/", 1)[0]
     d = post["date"]
     names = [surname_first(post["authors"][0])] + post["authors"][1:]
     who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + (", and " if len(names) > 2 else " and ") + names[-1]
@@ -326,7 +332,8 @@ def build(drafts):
                 if re.search(r"<svg\b[^>]*\bdata-name=", svg.read_text(encoding="utf-8")[:2000]):
                     darkmode_svg(svg)
     write("404.html", env.get_template("404.html").render(**ctx, page="404"))
-    write("feed.xml", atom_feed(site, [p for p in posts if not p["draft"]]))
+    # A copy stays out of the feed, so an archiver (Rogue Scholar) sees only the original.
+    write("feed.xml", atom_feed(site, [p for p in posts if not p["draft"] and not p["canonical"]]))
 
     if math_pages:
         r = subprocess.run(["node", str(ROOT / "mathjax.mjs"), *math_pages])

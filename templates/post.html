@@ -4,12 +4,14 @@
 {% block og_type %}article{% endblock %}
 {% block og_image %}{{ post.image or site.photo }}{% endblock %}
 {% block head %}
-<meta name="citation_title" content="{{ post.title }}">
+{% if post.canonical %}<link rel="canonical" href="{{ post.canonical }}">
+{% else %}<meta name="citation_title" content="{{ post.title }}">
 {% for a in post.authors %}<meta name="citation_author" content="{{ a }}">
 {% endfor %}<meta name="citation_publication_date" content="{{ post.date.strftime('%Y/%m/%d') }}">
 <meta name="citation_journal_title" content="{{ site.url.split('//')[1] }}">
 <meta name="citation_fulltext_html_url" content="{{ site.url }}{{ post.url }}">
 {% if post.doi %}<meta name="citation_doi" content="{{ post.doi }}">{% endif %}
+{% endif %}
 <meta name="dc.rights" content="{{ site.license.name }}">
 <link rel="license" href="{{ site.license.url }}">
 {% endblock %}
@@ -20,6 +22,7 @@
     <h1>{{ post.title }}</h1>
     <p class="authors">{{ post.authors | join(", ") }}{% if post.affiliation %}<span class="affil"> · {{ post.affiliation }}</span>{% endif %}</p>
     <p class="byline"><time datetime="{{ post.date.isoformat() }}">{{ post.date | longdate }}</time>{% if post.doi %} · <a href="https://doi.org/{{ post.doi }}">doi:{{ post.doi }}</a>{% endif %}{% if post.draft %} · <em class="draft">draft</em>{% endif %}</p>
+    {% if post.canonical %}<p class="byline">Also published on the <a href="{{ post.canonical }}">{{ post.canonical_name or post.canonical }}</a></p>{% endif %}
   </header>
   {% if post.toc %}{{ post.toc | safe }}{% endif %}
   <div class="prose">
