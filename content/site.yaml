@@ -3,7 +3,7 @@
 # Markdown is allowed in `bio` and in any `note`.
 
 name: Jinchen Zhao
-title: PhD student in Applied Physics, Yale University
+title: PhD candidate in Applied Physics, Yale University
 url: https://jinchen-zhao.github.io
 email: jinchen.zhao@yale.edu
 photo: /profile.jpg
@@ -17,13 +17,14 @@ links:
   - {label: ORCID, url: "https://orcid.org/0000-0003-2124-1113"}
   - {label: GitHub, url: "https://github.com/Jinchen-Zhao"}
   - {label: LinkedIn, url: "https://www.linkedin.com/in/jinchenzhao/"}
+  - {label: X, url: "https://x.com/JinchenZhaoo"}
 
 bio: |
-  I am a PhD student in Applied Physics at Yale University, advised by
+  I am a PhD candidate in Applied Physics at Yale University, advised by
   [Logan Wright](https://www.lgwrightlab.com/). I work on unconventional computing
-  platforms (optical, quantum and thermodynamic) in both theory and experiment.
-  I am also interested in machine learning and using large language models to
-  automate scientific research.
+  platforms (optical, quantum and thermodynamic) in theory and experiment.
+  I study how analog noise limits computation at ultra-low energy. I also build
+  tools that use large language models to automate scientific research.
 
 experience:
   - {when: "2023 – now", role: Graduate Research Assistant, org: Yale University, note: "Advisor: Logan Wright"}
