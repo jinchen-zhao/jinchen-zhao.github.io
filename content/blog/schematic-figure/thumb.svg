@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="45mm" height="45mm" viewBox="0 0 127.559 127.559" data-name="thumb">
+  <!-- A figure canvas with an optics schematic; a pencil draws the last beam; a sparkle marks the AI agent. -->
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#3A8FD0" stop-opacity="0.45"/>
+      <stop offset="0.6" stop-color="#3A8FD0" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#3A8FD0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- canvas -->
+  <rect x="6" y="10" width="104" height="108" rx="4" fill="#FFFFFF" stroke="#3D4652" stroke-width="2.4"/>
+  <!-- beams -->
+  <line x1="40" y1="88" x2="62" y2="88" stroke="#D93A3A" stroke-width="3"/>
+  <line x1="71" y1="79" x2="71" y2="30" stroke="#D93A3A" stroke-width="3"/>
+  <line x1="71" y1="30" x2="26" y2="30" stroke="#D93A3A" stroke-width="3"/>
+  <line x1="80" y1="88" x2="88" y2="88" stroke="#D93A3A" stroke-width="3"/>
+  <line x1="88" y1="88" x2="96" y2="88" stroke="#D93A3A" stroke-width="3" stroke-dasharray="2.6 2.6" opacity="0.7"/>
+  <!-- laser -->
+  <rect x="13" y="79" width="27" height="18" rx="2" fill="#3D4652"/>
+  <rect x="17" y="84" width="10" height="3" rx="1" fill="#C8D3D8"/>
+  <!-- lens -->
+  <ellipse cx="51" cy="88" rx="3" ry="10" fill="#E4E6EA" stroke="#3A8FD0" stroke-width="1.8"/>
+  <!-- beamsplitter cube -->
+  <rect x="62" y="79" width="18" height="18" fill="#E4E6EA" stroke="#3A8FD0" stroke-width="2"/>
+  <line x1="62" y1="97" x2="80" y2="79" stroke="#3A8FD0" stroke-width="1.8"/>
+  <!-- mirror -->
+  <rect x="59" y="26.5" width="24" height="7" rx="1.2" fill="#C8D3D8" stroke="#3D4652" stroke-width="1.6" transform="rotate(45 71 30)"/>
+  <!-- detector -->
+  <rect x="14" y="19" width="12" height="22" rx="1.6" fill="#D9822B"/>
+  <rect x="26" y="23" width="3" height="14" fill="#3D4652"/>
+  <!-- pencil drawing the beam -->
+  <g transform="translate(96.5 88) rotate(-52)">
+    <polygon points="0,0 8,-3.6 8,3.6" fill="#FFFFFF" stroke="#3D4652" stroke-width="1.3" stroke-linejoin="round"/>
+    <polygon points="0,0 3,-1.35 3,1.35" fill="#3D4652"/>
+    <rect x="8" y="-3.6" width="30" height="7.2" fill="#3A8FD0" stroke="#3D4652" stroke-width="1.3"/>
+    <rect x="38" y="-3.6" width="6" height="7.2" rx="1.4" fill="#D9822B" stroke="#3D4652" stroke-width="1.3"/>
+  </g>
+  <!-- sparkle: the AI agent -->
+  <circle cx="106" cy="20" r="17" fill="url(#glow)"/>
+  <path d="M106 7 C107.6 16 108.2 18.5 119 20 C108.2 21.5 107.6 24 106 33 C104.4 24 103.8 21.5 93 20 C103.8 18.5 104.4 16 106 7 Z" fill="#3A8FD0"/>
+  <path d="M92 38 C92.6 41 93 41.4 96 42 C93 42.6 92.6 43 92 46 C91.4 43 91 42.6 88 42 C91 41.4 91.4 41 92 38 Z" fill="#3A8FD0"/>
+</svg>

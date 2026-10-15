@@ -130,12 +130,12 @@ h2 {
 
 .pubs { list-style: none; margin: 0; padding: 0; }
 .pubs li {
-  display: grid; grid-template-columns: 8.75rem 1fr; gap: 1.25rem; align-items: center;
-  padding: .9rem 0;
+  display: grid; grid-template-columns: 6rem 1fr; gap: 1.1rem; align-items: center;
+  padding: .6rem 0;
 }
 .pubs li + li { border-top: 1px dashed var(--rule); }
 .pubs .thumb {
-  width: 8.75rem; aspect-ratio: 1; border-radius: 6px; overflow: hidden;
+  width: 6rem; aspect-ratio: 1; border-radius: 6px; overflow: hidden;
   background: #F4F2ED;              /* the thumbnails' paper tone; they recolour themselves in dark mode */
 }
 @media (prefers-color-scheme: dark) { .pubs .thumb { background: #1D1C1A; } }

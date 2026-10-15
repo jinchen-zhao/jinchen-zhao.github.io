@@ -31,6 +31,8 @@ This repository is public. Private notes about the site (what to keep off it and
 | `image` | preview-card image in the post folder; must be PNG/JPG (an `.svg` falls back to a same-name `.png`, else the portrait) |
 | `doi` | once assigned (e.g. by Rogue Scholar): shown in the byline, BibTeX and `citation_doi` |
 | `toc`, `draft` | table of contents; drafts never publish (`--drafts` previews them) |
+| `thumb` | square thumbnail for the homepage card, a file in the post folder; draw it like `static/pubs/` (palette hexes, transparent background) |
+| `canonical`, `canonical_name` | for a copy of a post published elsewhere: the original's URL and name. The page gets a canonical link and an "Originally published on" line, cites the original, and leaves out the `citation_*` tags and the feed entry |
 
 Math is ordinary LaTeX: `$..$`, `$$..$$`, `\begin{equation}`/`align` with `\label{}` and `\eqref{}` (AMS numbering per post, rendered at build time by MathJax; KaTeX was rejected because it has no `\label`/`\eqref`). Cite papers with `[@key]` from `refs.bib`; the reference list lands under a final `## References` heading. Figures: `![Caption.](file.svg){#fig:name}` is numbered "Figure N." and `@fig:name` becomes a link; add `width=55%` to shrink, `.wide` to break out of the text column. SVGs from the schematic-figure skill recolour for dark mode automatically.
 

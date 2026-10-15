@@ -111,6 +111,8 @@ def read_post(path, site):
         # A copy of a post first published elsewhere: the URL and name of the original. The page then points
         # search engines and the citation to the original, so Scholar and the DOI see one record.
         "canonical": meta.get("canonical", ""), "canonical_name": meta.get("canonical_name", ""),
+        # Square thumbnail for the homepage card, a file in content/blog/<slug>/.
+        "thumb": f"/blog/{slug}/{meta['thumb']}" if meta.get("thumb") else None,
         # Preview-card image: a file in content/blog/<slug>/, else the portrait.
         "image": f"/blog/{slug}/{image}" if image else None,
     }

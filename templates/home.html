@@ -19,12 +19,18 @@
 {% if posts %}
 <section id="writing">
   <h2>Writing</h2>
-  <ul class="rows">
+  <ol class="pubs">
   {% for p in posts %}
-    <li><span class="when">{{ p.date.strftime("%b %Y") }}</span>
-      <span class="what"><a href="{{ p.url }}">{{ p.title }}</a>{% if p.draft %} <em class="draft">draft</em>{% endif %}</span></li>
+    <li>
+      <a class="thumb" href="{{ p.url }}" tabindex="-1" aria-hidden="true">{% if p.thumb %}<img src="{{ p.thumb }}" alt="" width="96" height="96" loading="lazy">{% endif %}</a>
+      <div class="entry">
+        <p class="title"><a href="{{ p.url }}">{{ p.title }}</a>{% if p.draft %} <em class="draft">draft</em>{% endif %}</p>
+        <p class="authors">{% for a in p.authors %}{% if a == site.name %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+        <p class="meta"><span class="cite">{{ p.canonical_name or "Blog post" }} ({{ p.date.strftime("%b %Y") }})</span></p>
+      </div>
+    </li>
   {% endfor %}
-  </ul>
+  </ol>
   <p class="more"><a href="/blog/">All posts →</a></p>
 </section>
 {% endif %}

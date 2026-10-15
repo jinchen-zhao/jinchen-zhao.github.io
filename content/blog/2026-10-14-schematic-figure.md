@@ -8,6 +8,7 @@ affiliation: LGW Lab, Yale University
 image: gallery/prompt-holo-photo.jpg
 canonical: "https://lgwrightlab.github.io/schematic-figure/"
 canonical_name: "LGW Lab Blog"
+thumb: thumb.svg
 ---
 
 Doing science is fun, but drawing the schematic figure that explains it has been challenging for us: we were never trained to do it, yet that figure is often the first thing a reader looks at. Inspired by some recent [viral videos made by Opus 5.5 on X](https://x.com/claudeai/status/2103515655760982273), we realized that the artistry of state-of-the-art AI models has probably already passed the level needed for publication-quality schematic figures. So we built a skill for it, open source on [GitHub](https://github.com/lgwrightlab/schematic-figure), and a benchmark to test it. It turns out that Opus 5.5 and GPT-6 Astra can make schematic figures close to publication quality on their own, once they are equipped with the right skill.

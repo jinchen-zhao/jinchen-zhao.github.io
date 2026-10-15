@@ -22,7 +22,7 @@
     <h1>{{ post.title }}</h1>
     <p class="authors">{{ post.authors | join(", ") }}{% if post.affiliation %}<span class="affil"> · {{ post.affiliation }}</span>{% endif %}</p>
     <p class="byline"><time datetime="{{ post.date.isoformat() }}">{{ post.date | longdate }}</time>{% if post.doi %} · <a href="https://doi.org/{{ post.doi }}">doi:{{ post.doi }}</a>{% endif %}{% if post.draft %} · <em class="draft">draft</em>{% endif %}</p>
-    {% if post.canonical %}<p class="byline">Also published on the <a href="{{ post.canonical }}">{{ post.canonical_name or post.canonical }}</a></p>{% endif %}
+    {% if post.canonical %}<p class="byline">Originally published on the <a href="{{ post.canonical }}">{{ post.canonical_name or post.canonical }}</a></p>{% endif %}
   </header>
   {% if post.toc %}{{ post.toc | safe }}{% endif %}
   <div class="prose">
